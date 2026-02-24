@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   // Items for the ticker line
@@ -40,10 +41,15 @@ const HeroSection = () => {
             Discover handcrafted silk and designer sarees from India's master weavers.
             Each piece tells a story of tradition, artistry, and timeless beauty.
           </p>
-          <div style={styles.buttonGroup}>
-            <button style={styles.primaryBtn}>✦ Explore Collections</button>
-            <button style={styles.secondaryBtn}>Shop All Sarees →</button>
-          </div>
+         <div style={{ display: 'flex', gap: '20px' }}>
+  <Link to="/collection" style={{ textDecoration: 'none' }}>
+    <button style={styles.primaryBtn}>✦ Explore Collections</button>
+  </Link>
+
+  <Link to="/shop" style={{ textDecoration: 'none' }}>
+    <button style={styles.secondaryBtn}>Shop All Sarees →</button>
+  </Link>
+</div>
         </div>
 
         {/* Stats */}

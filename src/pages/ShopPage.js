@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 
 // --- STYLES ---
 const styles = `
@@ -164,19 +165,124 @@ const styles = `
   }
 `;
 
-const PRODUCTS = [
-  { id: 1, name: "Royal Blue Kanjeevaram", cat: "SILK SAREES", price: 11999, rating: 5, reviews: 64,oldPrice: 16999, badge: "NEW", discount: "-29%", img: "/silksaree.jpg" },
-  { id: 2, name: "Emerald Garden Silk", cat: "SILK SAREES", price: 7499,rating: 5, reviews: 64, oldPrice: 9999, badge: "NEW", discount: "-25%", img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=400" },
-  { id: 3, name: "Peach Bridal Elegance", cat: "BRIDAL", price: 24500,rating: 5, reviews: 64, oldPrice: 35000, badge: "BESTSELLER", discount: "-29%", img: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=400" },
-  { id: 4, name: "Crimson Banarasi", cat: "FESTIVAL", price: 18200,rating: 5, reviews: 64, oldPrice: 26000, badge: "BESTSELLER", discount: "-31%", img: "/festivalsaree.jpg" }
-];
+// const PRODUCTS = [
+//   { id: 1, name: "Royal Blue Kanjeevaram", cat: "SILK SAREES", price: 11999, rating: 5, reviews: 64,oldPrice: 16999, badge: "NEW", discount: "-29%", img: "/silksaree.jpg" },
+//   { id: 2, name: "Emerald Garden Silk", cat: "SILK SAREES", price: 7499,rating: 5, reviews: 64, oldPrice: 9999, badge: "NEW", discount: "-25%", img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=400" },
+//   { id: 3, name: "Peach Bridal Elegance", cat: "BRIDAL", price: 24500,rating: 5, reviews: 64, oldPrice: 35000, badge: "BESTSELLER", discount: "-29%", img: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=400" },
+//   { id: 4, name: "Crimson Banarasi", cat: "FESTIVAL", price: 18200,rating: 5, reviews: 64, oldPrice: 26000, badge: "BESTSELLER", discount: "-31%", img: "/festivalsaree.jpg" }
+// ];
 
 export default function ShopPage() {
  const [price, setPrice] = useState(35000);
   const [activeColor, setActiveColor] = useState('All');
   const [activeOccasion, setActiveOccasion] = useState('All');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [sortOption, setSortOption] = useState("Featured");
+const [products, setProducts] = useState([]);
+const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
 
+
+const displayedProducts = products
+  .filter(p => {
+    const withinPrice = p.price <= Number(price);
+    const matchesOccasion =
+      activeOccasion === 'All' || p.cat.toLowerCase().includes(activeOccasion.toLowerCase());
+    const matchesColor =
+      activeColor === 'All' || (p.color && p.color.toLowerCase() === activeColor.toLowerCase());
+    return withinPrice && matchesOccasion && matchesColor;
+  })
+  .sort((a, b) => {
+    if (sortOption === "Price: Low to High") return a.price - b.price;
+    if (sortOption === "Price: High to Low") return b.price - a.price;
+    return 0; // Featured/default order
+  });
+
+  const fetchReviewsForProduct = async (productId) => {
+  try {
+    const res = await fetch(`https://vanyabackenddatabase.onrender.com/review/${productId}`);
+    const data = await res.json();
+    return data; // array of reviews
+  } catch (err) {
+    console.error("Failed to fetch reviews for product:", err);
+    return [];
+  }
+};  
+useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('https://vanyabackenddatabase.onrender.com/products/all');
+      const productsData = await response.json();
+
+      // Fetch reviews for each product
+      const productsWithReviews = await Promise.all(
+        productsData.map(async (item) => {
+          const reviews = await fetchReviewsForProduct(item.id);
+          const totalReviews = reviews.length;
+         const avgRating = totalReviews
+  ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+  : 0;
+const roundedRating = Math.round(avgRating * 10) / 10; // e.g., 4.3
+
+          return {
+            id: item.id,
+            name: item.name,
+            cat: item.category,
+            price: Number(item.price),
+            oldPrice: Number(item.old_price),
+            rating: roundedRating,
+            reviews: totalReviews,
+            badge: Number(item.discount) > 20 ? 'BESTSELLER' : 'NEW',
+            discount: `-${item.discount}%`,
+            img: item.img_url || item.thumbnails[0],
+          };
+        })
+      );
+
+      setProducts(productsWithReviews);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, []);
+
+// Inside your ShopPage component, above the return:
+const handleAddToCart = async (product) => {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) {
+    alert("Please login to add products to cart.");
+    navigate("/login");
+    return;
+  }
+
+  const user = JSON.parse(storedUser);   // parse stored object
+  const userId = user.id;                // extract the numeric id
+
+  try {
+    const response = await fetch("https://vanyabackenddatabase.onrender.com/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,       // backend expects snake_case
+        product_id: product.id,
+        quantity: 1,
+      }),
+    });
+
+    if (response.ok) {
+      alert(`${product.name} added to cart!`);
+    } else {
+      alert("Failed to add to cart. Try again.");
+    }
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    alert("Something went wrong.");
+  }
+};
   return (
     <>
       <style>{styles}</style>
@@ -184,17 +290,21 @@ export default function ShopPage() {
       <header className="banner">
         <p style={{fontSize: '0.8rem', letterSpacing: '2px'}}>TRADITIONAL WEAVES</p>
         <h1>All Sarees</h1>
-        <p>{PRODUCTS.length} curated designs</p>
+        <p>{products.length} curated designs</p>
       </header>
 
       <div className="top-filter-bar">
         <button className="btn-filters-toggle" onClick={() => setSidebarOpen(true)}>☰ FILTERS</button>
-        <div className="results-count" style={{fontSize: '0.9rem', color: '#666'}}>Showing all {PRODUCTS.length} products</div>
-        <select className="sort-dropdown">
-          <option>Sort by: Featured</option>
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
-        </select>
+        <div className="results-count" style={{fontSize: '0.9rem', color: '#666'}}>Showing all {products.length} products</div>
+      <select 
+  className="sort-dropdown"
+  value={sortOption}                     // bind to state
+  onChange={(e) => setSortOption(e.target.value)} // update state on change
+>
+  <option>Featured</option>
+  <option>Price: Low to High</option>
+  <option>Price: High to Low</option>
+</select>
       </div>
 
       <div className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} onClick={() => setSidebarOpen(false)}></div>
@@ -219,7 +329,7 @@ export default function ShopPage() {
           <div className="filter-section">
             <h3>Occasion</h3>
             <ul className="filter-list">
-              {['All', 'Bridal', 'Wedding', 'Festival', 'Casual', 'Party Wear'].map(o => (
+              {['All', 'DesignerSarees', 'Wedding Collections', 'COTTON Sarees', 'SILK SAREES', 'PartyWear'].map(o => (
                 <li 
                   key={o} 
                   className={`filter-item ${activeOccasion === o ? 'active' : ''}`}
@@ -257,33 +367,48 @@ export default function ShopPage() {
           </div>
         </aside>    
 
-    <main className="product-grid">
-          {PRODUCTS.map(product => (
-            <div key={product.id} className="product-card">
-              <div className="image-container">
-                <img src={product.img} alt={product.name} className="product-img" />
-                <div className="hover-actions">
-                  <button className="btn-view">👁 Quick View</button>
-                  <button className="btn-cart">🛒 Add to Cart</button>
-                </div>
-              </div>
-              <div className="product-info">
-                <p className="product-cat">{product.cat}</p>
-                <h2 className="product-name">{product.name}</h2>
-                <div className="rating-row">
-                  <div className="stars">
-                    {"★".repeat(product.rating)}{"☆".repeat(5 - product.rating)}
-                  </div>
-                  <span className="review-count">({product.reviews})</span>
-                </div>
-                <div className="price-row">
-                  <span className="current-price">₹{product.price.toLocaleString()}</span>
-                  <span className="old-price">₹{product.oldPrice.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </main>
+  <main className="product-grid">
+  {loading ? (
+    <p>Loading products...</p>
+  ) : displayedProducts.length === 0 ? (
+    <p>No products match your filters.</p>
+  ) : (
+    displayedProducts.map(product => (
+      <div key={product.id} className="product-card">
+        <div className="image-container">
+          <img src={product.img} alt={product.name} className="product-img" />
+          <div className="hover-actions">
+            <button
+              className="btn-view"
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
+              👁 Quick View
+            </button>
+            <button className="btn-cart" onClick={() => handleAddToCart(product)}>
+              🛒 Add to Cart
+            </button>
+          </div>
+        </div>
+        <div className="product-info">
+          <p className="product-cat">{product.cat}</p>
+          <h2 className="product-name">{product.name}</h2>
+          <div className="rating-row">
+      <div className="stars">
+  {"★".repeat(Math.floor(product.rating))}
+  {product.rating % 1 >= 0.5 ? "½" : ""}
+  {"☆".repeat(5 - Math.ceil(product.rating))}
+</div>
+      <span className="review-count">({product.reviews || 0})</span>
+    </div>
+          <div className="price-row">
+            <span className="current-price">₹{product.price.toLocaleString()}</span>
+            <span className="old-price">₹{product.oldPrice.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+    ))
+  )}
+</main>
       </div>
     </>
   );

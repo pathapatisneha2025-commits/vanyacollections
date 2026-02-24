@@ -24,17 +24,21 @@ const Footer = () => {
         <div className="footer-grid">
           {/* Brand Column */}
           <div className="footer-col brand-col">
-            <img src="/vanya-logo-gold.png" alt="Vanya Collections" className="footer-logo" />
+            <img src="/logo.jpeg" alt="Vanya Collections" className="footer-logo" />
             <p className="brand-story">
               Vanya Collections brings you the finest handpicked sarees from the looms of India's master weavers. 
               Each piece is a testament to timeless elegance and exquisite craftsmanship.
             </p>
             <div className="contact-info">
-              <div className="contact-item"><Phone size={16} /> +91 98765 43210</div>
+              <div className="contact-item"><Phone size={16} /> +91 9398728628</div>
               <div className="contact-item"><Mail size={16} /> hello@vanyacollections.com</div>
               <div className="contact-item">
                 <MapPin size={16} className="pin-icon" /> 
-                <span>123 Silk Route, Textile Bazaar,<br/> Mumbai, Maharashtra 400001</span>
+                <span>Door No. 1-01, Thadithota
+Dhanalakshmi Complex, Upstair
+16 MC Division Village, Mahathma Gandhi
+Rajahmundry, Andhra Pradesh
+India - 533101</span>
               </div>
             </div>
             <div className="social-links">
@@ -118,8 +122,32 @@ const Footer = () => {
         .footer-col ul li { margin-bottom: 12px; font-size: 14px; opacity: 0.8; cursor: pointer; transition: 0.3s; }
         .footer-col ul li:hover { opacity: 1; transform: translateX(5px); color: #fdfaf5; }
 
-        .brand-col .footer-logo { height: 60px; margin-bottom: 25px; }
-        .brand-story { font-size: 14px; line-height: 1.8; margin-bottom: 25px; color: #a18a5e; }
+/* Updated Footer Logo with Seamless Blend */
+        .brand-col .footer-logo { 
+          height: 65px; 
+          width: auto;
+          margin-bottom: 25px; 
+          display: block;
+          
+          /* Matches the footer background color to hide the JPEG box */
+          background-color: #0d2e1f; 
+          
+          /* 'screen' makes the dark JPEG background transparent */
+          mix-blend-mode: screen; 
+          
+          /* Sharpens the gold for the darker footer background */
+          filter: brightness(1.1) contrast(1.2); 
+          
+          /* The same 'crop' trick: scales up and ensures no edge borders show */
+          transform: scale(1.1);
+          border: none;
+          outline: none;
+        }
+
+        /* Container adjustment to ensure the 'scale' doesn't cause layout shifts */
+        .brand-col {
+          overflow: hidden; 
+        }        .brand-story { font-size: 14px; line-height: 1.8; margin-bottom: 25px; color: #a18a5e; }
         
         .contact-info { margin-bottom: 25px; }
         .contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }

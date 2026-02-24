@@ -15,6 +15,10 @@ import ContactPage from "./pages/ContactPage";
 import AboutPage from "./pages/AboutPage";
 import CollectionPage from "./pages/CollectioPage";
 import ShopPage from "./pages/ShopPage";
+import ProductdetailedPage from "./pages/Productdetailedpage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckouPage";
+import AuthPage from "./pages/AuthPage";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -47,8 +51,15 @@ function App() {
         {/* Other Pages */}
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
-                <Route path="/collection" element={<CollectionPage />} />
-                                <Route path="/shop" element={<ShopPage />} />
+       <Route path="/collection" element={<CollectionPage />} />
+       <Route path="/shop" element={<ShopPage />} />
+      <Route path="/product/:id" element={<ProductdetailedPage />} />
+     <Route path="/cart" element={<CartPage />} />
+     <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/AuthPage" element={<AuthPage />} />
+
+
+
 
 
       </Routes>

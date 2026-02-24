@@ -1,10 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
 
 const ContactPage = () => {
+  // ✅ State for form inputs
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('https://vanyabackenddatabase.onrender.com/contact/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert('Message sent successfully!');
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      } else {
+        alert(result.error || 'Failed to send message');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send message. Try again!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={styles.pageContainer}>
-      {/* Hero Banner Section - Exact match to Screenshot 172405 */}
+      {/* Hero Banner Section */}
       <div style={styles.heroBanner}>
         <div style={styles.patternOverlay}></div>
         <div style={styles.heroContent}>
@@ -17,14 +59,12 @@ const ContactPage = () => {
       <div style={styles.contentSection}>
         <div style={styles.container}>
           <div className="contact-grid" style={styles.grid}>
-            
-            {/* Left: Contact Info - Matches layout in Screenshot 172426 */}
+            {/* Left: Contact Info */}
             <div style={styles.infoColumn}>
               <h2 style={styles.sectionTitle}>We're Here to Help</h2>
               <p style={styles.sectionDesc}>
                 Whether you have a question about a saree, need styling advice, or want to make a special order — our team is always ready to assist.
               </p>
-
               <div style={styles.infoList}>
                 <div style={styles.infoItem}>
                   <div style={styles.iconCircle}><Phone size={18} color="#bca172" strokeWidth={1.5} /></div>
@@ -55,45 +95,80 @@ const ContactPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* WhatsApp button from Screenshot 172426 */}
               <button style={styles.whatsappBtn}>
                 <span style={{ fontSize: '18px' }}>💬</span> Chat on WhatsApp
               </button>
             </div>
 
-            {/* Right: Form Card - Exact Match to Screenshot 172405 & 172426 */}
+            {/* Right: Form Card */}
             <div style={styles.formCard}>
               <h3 style={styles.formTitle}>Send Us a Message</h3>
-              <form style={styles.form}>
+              <form style={styles.form} onSubmit={handleSubmit}>
                 <div className="form-row" style={styles.formRow}>
                   <div style={styles.formGroup}>
                     <label style={styles.label}>Your Name</label>
-                    <input type="text" placeholder="Priya Sharma" style={styles.input} />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Priya Sharma"
+                      style={styles.input}
+                      required
+                    />
                   </div>
                   <div style={styles.formGroup}>
                     <label style={styles.label}>Email Address</label>
-                    <input type="email" placeholder="priya@example.com" style={styles.input} />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="priya@example.com"
+                      style={styles.input}
+                      required
+                    />
                   </div>
                 </div>
                 <div className="form-row" style={styles.formRow}>
                   <div style={styles.formGroup}>
                     <label style={styles.label}>Phone Number</label>
-                    <input type="text" placeholder="+91 98765 43210" style={styles.input} />
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+91 98765 43210"
+                      style={styles.input}
+                    />
                   </div>
                   <div style={styles.formGroup}>
                     <label style={styles.label}>Subject</label>
-                    <input type="text" placeholder="Order inquiry, Styling advice..." style={styles.input} />
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="Order inquiry, Styling advice..."
+                      style={styles.input}
+                    />
                   </div>
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Message</label>
-                  <textarea placeholder="Tell us how we can help you..." style={{...styles.input, height: '120px', resize: 'none'}}></textarea>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us how we can help you..."
+                    style={{ ...styles.input, height: '120px', resize: 'none' }}
+                    required
+                  ></textarea>
                 </div>
-                
-                {/* The pill-shaped dark green submit button from Screenshot 172426 */}
-                <button type="submit" style={styles.submitBtn}>
-                   <Send size={16} style={{marginRight: '10px'}} /> Send Message
+
+                <button type="submit" style={styles.submitBtn} disabled={loading}>
+                  <Send size={16} style={{ marginRight: '10px' }} />
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>
@@ -101,7 +176,7 @@ const ContactPage = () => {
         </div>
       </div>
 
-      {/* Boutique Map Section - Match to Screenshot 172435 */}
+      {/* Boutique Map Section */}
       <div style={styles.mapSection}>
         <div style={styles.mapCard}>
           <div style={styles.mapPinIcon}>
@@ -112,16 +187,11 @@ const ContactPage = () => {
           <button style={styles.mapBtn}>Open in Maps</button>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 992px) {
-          .contact-grid { grid-template-columns: 1fr !important; gap: 50px !important; }
-          .form-row { grid-template-columns: 1fr !important; gap: 20px !important; }
-        }
-      `}</style>
     </div>
   );
 };
+
+
 
 const styles = {
   pageContainer: { backgroundColor: '#fdfdfb', minHeight: '100vh', fontFamily: "'Playfair Display', serif" },
