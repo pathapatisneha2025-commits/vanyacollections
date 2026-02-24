@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link ,useLocation} from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom';
 import { Search, User, Heart, ShoppingBag, Menu, X } from 'lucide-react';
 import CartPage from '../pages/CartPage';
 
@@ -7,61 +7,48 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // Load user from localStorage
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
 
-  // Load user on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // Update user if coming from login redirect
   useEffect(() => {
     if (location.state?.user) {
       setUser(location.state.user);
     }
   }, [location]);
 
-  // Example cart data
-  // Cart items state starts empty
-const [cartItems, setCartItems] = useState([]);
-
-useEffect(() => {
-  const fetchCart = async () => {
-    if (user) {
-      try {
-        const res = await fetch(`https://vanyabackenddatabase.onrender.com/cart/${user.id}`);
-        const data = await res.json();
-
-        if (data.items) {
-          setCartItems(data.items); // update state with API response
-        } else {
-          setCartItems([]); // fallback if no items
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (user) {
+        try {
+          const res = await fetch(`https://vanyabackenddatabase.onrender.com/cart/${user.id}`);
+          const data = await res.json();
+          setCartItems(data.items || []);
+        } catch (err) {
+          console.error('Failed to fetch cart:', err);
+          setCartItems([]);
         }
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
-        setCartItems([]); // clear cart on error
+      } else {
+        setCartItems([]);
       }
-    } else {
-      setCartItems([]); // clear cart if no user
-    }
-  };
-
-  fetchCart();
-}, [user]);
+    };
+    fetchCart();
+  }, [user]);
 
   const updateQty = (id, newQty) => {
     if (newQty < 1) return;
-    setCartItems(cartItems.map(item => item.id === id ? {...item, quantity: newQty} : item));
+    setCartItems(cartItems.map(item => item.id === id ? { ...item, quantity: newQty } : item));
   };
 
   const removeItem = (id) => {
     setCartItems(cartItems.filter(item => item.id !== id));
   };
 
-  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
@@ -71,65 +58,54 @@ useEffect(() => {
     <div style={styles.container}>
       <nav className="navbar-layout" style={styles.navbar}>
         
-        {/* Left: Mobile Toggle */}
-        <div className="mobile-toggle" style={styles.mobileToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        {/* 1. Logo (Left on mobile) */}
+        <div className="logo-section" style={styles.logoSection}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <img src="/logo.jpeg" alt="Vanya Logo" style={styles.logoImage} />
+          </Link>
         </div>
-{/* Center: Logo */}
-<div style={styles.logoSection}>
-  <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-    <img 
-      src="/logo.jpeg" 
-      alt="Vanya Logo" 
-      style={styles.logoImage} 
-    />
-  </Link>
-</div>
 
-        {/* Desktop Menu */}
+        {/* Desktop Links (Hidden on mobile) */}
         <div className="nav-links-desktop" style={styles.navLinks}>
           <Link to="/" style={styles.link}>HOME</Link>
           <Link to="/shop" style={styles.link}>SHOP</Link>
-          <Link to="/collection" style={styles.link}>Collections</Link>
+          <Link to="/collection" style={styles.link}>COLLECTIONS</Link>
           <Link to="/about" style={styles.link}>ABOUT</Link>
           <Link to="/contact" style={styles.link}>CONTACT</Link>
         </div>
 
-        {/* Right: Action Icons */}
+        {/* 2. Action Icons (Center on mobile) */}
         <div className="icon-group-mobile" style={styles.iconGroup}>
-          <Search size={20} style={styles.icon} className="hide-mobile" />
-      {user ? (
-  <div style={{ position: 'relative' }}>
-    {/* Username button */}
-    <button
-      style={styles.userDropdownBtn}
-      onClick={() => setIsDropdownOpen(prev => !prev)}
-    >
-      Hello, {user.fullName} ▼
-    </button>
-
-    {/* Dropdown menu */}
-    {isDropdownOpen && (
-      <div style={styles.userDropdownMenu}>
-        {/* <Link to="/profile" style={styles.dropdownItem}>Profile</Link> */}
-        <button onClick={handleLogout} style={styles.dropdownItemBtn}>Logout</button>
-      </div>
-    )}
-  </div>
-) : (
-  <Link to="/AuthPage" style={{ display: 'flex', alignItems: 'center' }}>
-    <User size={22} style={styles.icon} />
-  </Link>
-)}
-          <Heart size={20} style={styles.icon} className="hide-mobile" />
+          <Search size={20} style={styles.icon} />
+          
+          {user ? (
+            <div style={{ position: 'relative' }}>
+              <button style={styles.userDropdownBtn} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <User size={22} style={styles.icon} />
+              </button>
+              {isDropdownOpen && (
+                <div style={styles.userDropdownMenu}>
+                  <button onClick={handleLogout} style={styles.dropdownItemBtn}>Logout</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/AuthPage"><User size={22} style={styles.icon} /></Link>
+          )}
+          
+          <Heart size={20} style={styles.icon} />
           
           <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsCartOpen(true)}>
             <ShoppingBag size={22} style={styles.icon} />
             {cartItems.length > 0 && (
-<span style={styles.badge}>
-  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-</span>            )}
+              <span style={styles.badge}>{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
+            )}
           </div>
+        </div>
+
+        {/* 3. Mobile Toggle (Right on mobile) */}
+        <div className="mobile-toggle" style={styles.mobileToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </div>
       </nav>
 
@@ -144,7 +120,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Cart Sidebar */}
       <CartPage 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
@@ -157,23 +132,33 @@ useEffect(() => {
         {`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
           
+          /* Desktop is kept as is. Mobile (992px and below) matches the screenshot */
           @media (max-width: 992px) {
             .navbar-layout {
               display: grid !important;
-              grid-template-columns: 1fr auto 1fr !important;
-              padding: 15px 5% !important;
-              background-color: #063b2a;
+              /* LOGO | ICONS | HAMBURGER */
+              grid-template-columns: 1fr auto auto !important; 
+              gap: 15px;
+              padding: 0 15px !important;
+              align-items: center;
+              height: 60px !important;
             }
             .nav-links-desktop { display: none !important; }
+            
+            .logo-section {
+              justify-content: flex-start !important;
+              margin-right: 0 !important;
+            }
+
+            .icon-group-mobile {
+              justify-content: center !important;
+              gap: 12px !important; /* Tighter spacing for mobile icons */
+            }
+
             .mobile-toggle { 
               display: flex !important; 
-              justify-content: flex-start;
-              align-items: center;
+              justify-content: flex-end;
             }
-            .icon-group-mobile {
-              justify-content: flex-end !important;
-            }
-            .hide-mobile { display: none !important; }
           }
         `}
       </style>
@@ -189,9 +174,7 @@ const styles = {
     top: 0,
     zIndex: 2000,
   },
- // Replace these specific sections in your styles object
-
-logoImage: {
+ logoImage: {
   height: '60px',        // Increased height to fill the bar vertically
   width: 'auto',
   display: 'block',
@@ -226,15 +209,14 @@ navbar: {
   height: '70px',  // Explicit height helps alignment
   color: '#d4af37',
 },
-    logoText: { fontSize: '24px', fontWeight: '700', letterSpacing: '4px', color: '#d4af37' },
-  logoSubtext: { fontSize: '9px', textTransform: 'uppercase', letterSpacing: '2px', color: '#d4af37', marginTop: '2px' },
+
   navLinks: { display: 'flex', gap: '25px', alignItems: 'center' },
   link: { color: '#ffffff', textDecoration: 'none', fontSize: '13px', fontWeight: '400', letterSpacing: '1px' },
   iconGroup: { display: 'flex', gap: '18px', alignItems: 'center', color: '#d4af37' },
-  icon: { cursor: 'pointer', strokeWidth: '1.5px' },
+  icon: { cursor: 'pointer', strokeWidth: '1.5px', color: '#d4af37' },
   mobileToggle: { display: 'none', color: '#d4af37', cursor: 'pointer' },
-  mobileMenu: { position: 'absolute', top: '100%', left: 0, width: '100%', backgroundColor: '#063b2a', display: 'flex', flexDirection: 'column', zIndex: 999, borderTop: '1px solid #084d37', paddingBottom: '20px' },
-  mobileNavLink: { color: 'white', padding: '15px 5%', textDecoration: 'none', borderBottom: '1px solid #084d37', fontSize: '14px', letterSpacing: '1px' },
+  mobileMenu: { position: 'absolute', top: '100%', left: 0, width: '100%', backgroundColor: '#063b2a', display: 'flex', flexDirection: 'column', zIndex: 999, borderTop: '1px solid #084d37' },
+  mobileNavLink: { color: 'white', padding: '15px 5%', textDecoration: 'none', borderBottom: '1px solid #084d37', fontSize: '14px' },
   badge: {
     position: 'absolute',
     top: '-8px',
@@ -245,60 +227,10 @@ navbar: {
     fontWeight: 'bold',
     borderRadius: '50%',
     padding: '2px 6px',
-    border: '1px solid #063b2a'
   },
-  logoutBtn: {
-    marginLeft: '10px',
-    backgroundColor: '#f2b94a',
-    color: '#063b2a',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '4px 10px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
-  userDropdownBtn: {
-  background: 'none',
-  border: 'none',
-  color: '#f2b94a',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  fontSize: '14px',
-},
-
-userDropdownMenu: {
-  position: 'absolute',
-  top: '100%',
-  right: 0,
-  backgroundColor: '#063b2a',
-  border: '1px solid #084d37',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  marginTop: '5px',
-  minWidth: '120px',
-  zIndex: 1000,
-  display: 'flex',
-  flexDirection: 'column',
-},
-
-dropdownItem: {
-  color: '#fff',
-  padding: '10px 15px',
-  textDecoration: 'none',
-  fontSize: '13px',
-  cursor: 'pointer',
-  borderBottom: '1px solid #084d37',
-},
-
-dropdownItemBtn: {
-  background: 'none',
-  border: 'none',
-  color: '#fff',
-  padding: '10px 15px',
-  fontSize: '13px',
-  textAlign: 'left',
-  cursor: 'pointer',
-}
+  userDropdownBtn: { background: 'none', border: 'none', padding: 0, cursor: 'pointer' },
+  userDropdownMenu: { position: 'absolute', top: '100%', right: 0, backgroundColor: '#063b2a', border: '1px solid #084d37', borderRadius: '4px', minWidth: '100px' },
+  dropdownItemBtn: { background: 'none', border: 'none', color: '#fff', padding: '10px', cursor: 'pointer', width: '100%' }
 };
 
 export default Navbar;

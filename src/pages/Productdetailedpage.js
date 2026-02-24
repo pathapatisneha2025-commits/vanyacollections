@@ -25,7 +25,7 @@
 
   const roundedRating = Math.round(averageRating * 2) / 2; // round to nearest 0.5
   const totalReviews = reviews.length;
-
+const totalPrice = product ? product.price * quantity : 0;
   // Generate star string
   const fullStars = "★".repeat(Math.floor(roundedRating));
   const halfStar = roundedRating % 1 === 0.5 ? "½" : ""; // optional half-star
@@ -70,32 +70,43 @@
 
       window.scrollTo(0, 0); // Reset scroll on product change
     }, [id]);
-  const addToCart = async (productId, qty = 1) => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
-        alert('Please login to add items to cart.');
-        return;
-      }
-
-      const user = JSON.parse(storedUser);
-      const userId = user.id;
-
-      const res = await fetch("https://vanyabackenddatabase.onrender.com/cart/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, product_id: productId, quantity: qty }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add to cart");
-
-      alert(`Added ${qty} item(s) to cart!`);
-    } catch (err) {
-      console.error(err);
-      alert("Error adding to cart: " + err.message);
+    
+const addToCart = async (productId, qty = 1) => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('Please login to add items to cart.');
+      return;
     }
-  };
+
+    const user = JSON.parse(storedUser);
+    const userId = user.id;
+
+    const res = await fetch("https://vanyabackenddatabase.onrender.com/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, product_id: productId, quantity: qty }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to add to cart");
+
+    alert(`Added ${qty} item(s) to cart!`);
+
+    // ✅ Update stock locally
+    setProduct(prev => ({
+      ...prev,
+      stock: prev.stock - qty
+    }));
+
+    // Optional: reset quantity to 1 after adding
+    setQuantity(1);
+
+  } catch (err) {
+    console.error(err);
+    alert("Error adding to cart: " + err.message);
+  }
+};
 const handleBuyNow = async () => {
   const storedUser = localStorage.getItem("user");
   if (!storedUser) {
@@ -247,8 +258,9 @@ const handleBuyNow = async () => {
 
             <div className="pd-price-row">
               <span className="pd-price">
-                ₹{Number(product.price).toLocaleString()}
-              </span>
+<span className="pd-price">
+  ₹{Number(totalPrice).toLocaleString()}
+</span>              </span>
               {product.old_price && (
                 <>
                   <span className="pd-old">
@@ -258,7 +270,15 @@ const handleBuyNow = async () => {
                 </>
               )}
             </div>
-
+ <div className="pd-stock">
+  {product.stock > 0 ? (
+    <span style={{ color: '#1a3a32', fontWeight: 600 }}>
+      In Stock: {product.stock} pcs
+    </span>
+  ) : (
+    <span style={{ color: 'red', fontWeight: 600 }}>Out of Stock</span>
+  )}
+</div>
             <hr className="pd-divider" />
 
             <div className="pd-spec-grid">
@@ -294,6 +314,8 @@ const handleBuyNow = async () => {
               <button 
     className="pd-add-to-bag"
     onClick={() => addToCart(product.id, quantity)}
+      disabled={product.stock === 0}
+
   >
     <span style={{ marginRight: '8px' }}>👜</span> Add to Bag
   </button>
@@ -324,7 +346,8 @@ const handleBuyNow = async () => {
                 </button>
               </div>
 
-  <button className="pd-buy-now" onClick={handleBuyNow}>
+  <button className="pd-buy-now" onClick={handleBuyNow}   disabled={product.stock === 0}
+>
     Buy Now
   </button>          </div>
 
@@ -485,11 +508,16 @@ const handleBuyNow = async () => {
   .pd-category { color: #d4af37; letter-spacing: 2px; font-size: 12px; }
   .pd-title { font-size: 32px; color: #1a3a32; margin: 10px 0; }
   .pd-rating { margin-bottom: 15px; }
+
   .stars { color: #f5b921; margin-right: 10px; }
   .pd-price-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
   .pd-price { font-size: 28px; font-weight: bold; color: #b8860b; }
   .pd-old { text-decoration: line-through; color: #888; }
   .pd-discount { background: #ffe5e5; color: red; padding: 4px 8px; border-radius: 6px; }
+  .pd-stock {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
   .pd-divider { margin: 15px 0; border: none; border-top: 1px solid #ddd; }
   .pd-spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
   .pd-spec-box { background: #fff; padding: 15px; border-radius: 12px; }

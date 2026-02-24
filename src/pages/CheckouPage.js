@@ -20,7 +20,7 @@ const totalAmount = locationState.totalAmount ?? cartItems.reduce((acc, item) =>
     state: '',
     address: ''
   });
- const placeOrder = async () => {
+const placeOrder = async () => {
   const storedUser = localStorage.getItem('user');
   if (!storedUser) {
     alert('Please login to place an order.');
@@ -28,12 +28,22 @@ const totalAmount = locationState.totalAmount ?? cartItems.reduce((acc, item) =>
     return;
   }
 
-  const user = JSON.parse(storedUser); // parse stored user object
-  const userId = user.id;              // extract id
+  const user = JSON.parse(storedUser);
+  const userId = user.id;
 
   if (!cartItems.length) {
     alert('Cart is empty!');
     return;
+  }
+
+  // ✅ Check if address fields are filled
+  const requiredFields = ['fullName','phone','email','pinCode','city','state','address'];
+  for (let field of requiredFields) {
+    if (!formData[field] || formData[field].trim() === '') {
+      alert(`Please fill your ${field === 'fullName' ? 'Full Name' : field}`);
+      setStep('address'); // go back to address step
+      return;
+    }
   }
 
   setLoading(true);
@@ -43,7 +53,7 @@ const totalAmount = locationState.totalAmount ?? cartItems.reduce((acc, item) =>
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        user_id: userId,       // <-- pass user ID
+        user_id: userId,
         formData,
         cartItems,
         paymentMethod: selectedMethod,
