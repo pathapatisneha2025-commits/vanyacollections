@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 const CollectionsPage = () => {
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeSubCategory, setActiveSubCategory] = useState('All');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -12,26 +14,23 @@ const CollectionsPage = () => {
         const res = await fetch('https://vanyabackenddatabase.onrender.com/products/all');
         const data = await res.json();
 
-        // Map products to frontend structure
         const mappedProducts = data.map(item => ({
           id: item.id,
           name: item.name,
           category: item.category,
+          subCategory: item.sub_category,
           price: `₹${Number(item.price).toLocaleString()}`,
           originalPrice: `₹${Number(item.old_price).toLocaleString()}`,
           discount: `-${item.discount}%`,
-          rating: 4 + Math.random(), // Random rating
+          rating: 4 + Math.random(),
           reviews: Math.floor(Math.random() * 100) + 10,
           tag: Number(item.discount) > 20 ? 'BESTSELLER' : 'NEW',
           image: item.img_url || item.thumbnails[0]
         }));
 
         setProducts(mappedProducts);
-
-        // Extract unique categories dynamically for filters & summary
         const uniqueCategories = [...new Set(data.map(p => p.category))];
         setCategories(['All', ...uniqueCategories]);
-
       } catch (err) {
         console.error('Error fetching products:', err);
       } finally {
@@ -42,21 +41,43 @@ const CollectionsPage = () => {
     fetchProducts();
   }, []);
 
-  // Generate summary dynamically with main image from backend
-const collectionsSummary = categories
-  .filter(cat => cat !== 'All')
-  .map((cat, idx) => {
-    const firstProduct = products.find(p => p.category === cat);
-    return {
-      id: idx + 1,
-      category: cat,
-      title: cat,
-      count: `${products.filter(p => p.category === cat).length} DESIGNS`,
-      description: `Explore our ${cat.toLowerCase()} collection.`,
-      image: firstProduct ? firstProduct.image : 'https://via.placeholder.com/400', // fallback
-      btnText: `Explore ${cat}`
-    };
-  });
+  // Update subcategories when a category is selected
+  useEffect(() => {
+    if (activeCategory === 'All') {
+      setSubCategories([]);
+      setActiveSubCategory('All');
+    } else {
+      const subs = products
+        .filter(p => p.category === activeCategory)
+        .map(p => p.subCategory)
+        .filter(Boolean);
+      setSubCategories(['All', ...[...new Set(subs)]]);
+      setActiveSubCategory('All');
+    }
+  }, [activeCategory, products]);
+
+  // Filter products by category & subcategory
+  const filteredProducts = products.filter(p =>
+    (activeCategory === 'All' || p.category === activeCategory) &&
+    (activeSubCategory === 'All' || p.subCategory === activeSubCategory)
+  );
+
+  // Collections summary
+  const collectionsSummary = categories
+    .filter(cat => cat !== 'All')
+    .map((cat, idx) => {
+      const firstProduct = products.find(p => p.category === cat);
+      return {
+        id: idx + 1,
+        category: cat,
+        title: cat,
+        count: `${products.filter(p => p.category === cat).length} DESIGNS`,
+        description: `Explore our ${cat.toLowerCase()} collection.`,
+        image: firstProduct ? firstProduct.image : 'https://via.placeholder.com/400',
+        btnText: `Explore ${cat}`
+      };
+    });
+
   return (
     <div className="vanya-wrapper">
       <style>{`
@@ -64,7 +85,7 @@ const collectionsSummary = categories
         .vanya-wrapper { font-family: 'Playfair Display', serif; color: #333; }
         header { background: var(--primary-green); color: white; text-align: center; padding: 60px 20px; }
         .main-title { font-size: 3rem; color: var(--accent-gold); margin: 10px 0; }
-        .filter-tabs { display: flex; justify-content: center; gap: 10px; padding: 30px; position: sticky; top: 0; background: white; z-index: 100; border-bottom: 1px solid #eee; }
+        .filter-tabs { display: flex; justify-content: center; gap: 10px; padding: 20px; background: white; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
         .tab-btn { padding: 10px 20px; border-radius: 30px; border: 1px solid #ddd; background: none; cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
 
@@ -91,26 +112,51 @@ const collectionsSummary = categories
         .quick-view { flex: 1; padding: 10px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
         .add-cart { flex: 1.5; padding: 10px; background: var(--accent-gold); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
+        /* Subcategory Tabs */
+        .sub-filter-tabs { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #f9f9f9; border-bottom: 1px solid #eee; }
+        .sub-tab-btn { padding: 8px 18px; border-radius: 25px; border: 1px solid #ddd; background: none; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
+        .sub-tab-btn.active { background: var(--accent-gold); color: white; border-color: var(--accent-gold); }
+
         @media (max-width: 768px) { .summary-card, .summary-card.reverse { flex-direction: column; } .card-img { height: 250px; width: 100%; } }
       `}</style>
 
       <header>
         <p className="subtitle">CURATED FOR YOU</p>
-        <h1 className="main-title">{activeFilter === 'All' ? 'All Collections' : activeFilter}</h1>
+        <h1 className="main-title">{activeCategory === 'All' ? 'All Collections' : activeCategory}</h1>
       </header>
 
+      {/* Category Filter */}
       <nav className="filter-tabs">
-        {categories.map(f => (
-          <button key={f} className={`tab-btn ${activeFilter === f ? 'active' : ''}`} onClick={() => setActiveFilter(f)}>
-            {f}
+        {categories.map(cat => (
+          <button
+            key={cat}
+            className={`tab-btn ${activeCategory === cat ? 'active' : ''}`}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
           </button>
         ))}
       </nav>
 
+      {/* Subcategory Filter */}
+      {subCategories.length > 1 && (
+        <nav className="sub-filter-tabs">
+          {subCategories.map(sub => (
+            <button
+              key={sub}
+              className={`sub-tab-btn ${activeSubCategory === sub ? 'active' : ''}`}
+              onClick={() => setActiveSubCategory(sub)}
+            >
+              {sub}
+            </button>
+          ))}
+        </nav>
+      )}
+
       <main>
         {loading ? (
           <p style={{textAlign: 'center'}}>Loading products...</p>
-        ) : activeFilter === 'All' ? (
+        ) : activeCategory === 'All' ? (
           <div className="summary-list">
             {collectionsSummary.map((item, index) => (
               <article key={item.id} className={`summary-card ${index % 2 !== 0 ? 'reverse' : ''}`}>
@@ -119,7 +165,7 @@ const collectionsSummary = categories
                   <span style={{color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '0.8rem'}}>{item.count}</span>
                   <h2 style={{fontSize: '2.2rem', margin: '10px 0'}}>{item.title}</h2>
                   <p style={{color: 'var(--text-gray)', marginBottom: '20px'}}>{item.description}</p>
-                  <button className="explore-btn" onClick={() => setActiveFilter(item.category)}>
+                  <button className="explore-btn" onClick={() => setActiveCategory(item.category)}>
                     {item.btnText} <span>→</span>
                   </button>
                 </div>
@@ -128,31 +174,29 @@ const collectionsSummary = categories
           </div>
         ) : (
           <div className="product-grid">
-            {products
-              .filter(prod => activeFilter === 'All' || prod.category === activeFilter)
-              .map(prod => (
-                <div key={prod.id} className="product-card">
-                  <span className="badge">{prod.tag}</span>
-                  <span className="discount-tag">{prod.discount}</span>
-                  <div className="wishlist-icon">♡</div>
-                  <div className="prod-img"><img src={prod.image} alt={prod.name} /></div>
-                  <div className="prod-details">
-                    <p style={{fontSize: '0.75rem', color: '#888', textTransform: 'uppercase'}}>{prod.category}</p>
-                    <h3 style={{fontSize: '1.1rem', margin: '5px 0'}}>{prod.name}</h3>
-                    <div style={{color: '#f1c40f', fontSize: '0.9rem'}}>
-                      {'★'.repeat(Math.floor(prod.rating))} <span style={{color: '#999'}}>({prod.reviews})</span>
-                    </div>
-                    <div className="price-row">
-                      <span className="current-price">{prod.price}</span>
-                      <span className="old-price">{prod.originalPrice}</span>
-                    </div>
-                    <div className="btn-group">
-                      <button className="quick-view">👁 Quick View</button>
-                      <button className="add-cart">🛒 Add to Cart</button>
-                    </div>
+            {filteredProducts.map(prod => (
+              <div key={prod.id} className="product-card">
+                <span className="badge">{prod.tag}</span>
+                <span className="discount-tag">{prod.discount}</span>
+                <div className="wishlist-icon">♡</div>
+                <div className="prod-img"><img src={prod.image} alt={prod.name} /></div>
+                <div className="prod-details">
+                  <p style={{fontSize: '0.75rem', color: '#888', textTransform: 'uppercase'}}>{prod.category}</p>
+                  <h3 style={{fontSize: '1.1rem', margin: '5px 0'}}>{prod.name}</h3>
+                  <div style={{color: '#f1c40f', fontSize: '0.9rem'}}>
+                    {'★'.repeat(Math.floor(prod.rating))} <span style={{color: '#999'}}>({prod.reviews})</span>
+                  </div>
+                  <div className="price-row">
+                    <span className="current-price">{prod.price}</span>
+                    <span className="old-price">{prod.originalPrice}</span>
+                  </div>
+                  <div className="btn-group">
+                    <button className="quick-view">👁 Quick View</button>
+                    <button className="add-cart">🛒 Add to Cart</button>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
         )}
       </main>

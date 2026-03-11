@@ -24,7 +24,7 @@ const Footer = () => {
         <div className="footer-grid">
           {/* Brand Column */}
           <div className="footer-col brand-col">
-            <img src="/logo.jpeg" alt="Vanya Collections" className="footer-logo" />
+            <img src="/vanyalogo.png" alt="Vanya Collections" className="footer-logo" />
             <p className="brand-story">
               Vanya Collections brings you the finest handpicked sarees from the looms of India's master weavers. 
               Each piece is a testament to timeless elegance and exquisite craftsmanship.
@@ -123,31 +123,44 @@ India - 533101</span>
         .footer-col ul li:hover { opacity: 1; transform: translateX(5px); color: #fdfaf5; }
 
 /* Updated Footer Logo with Seamless Blend */
-        .brand-col .footer-logo { 
-          height: 65px; 
-          width: auto;
-          margin-bottom: 25px; 
-          display: block;
-          
-          /* Matches the footer background color to hide the JPEG box */
-          background-color: #0d2e1f; 
-          
-          /* 'screen' makes the dark JPEG background transparent */
-          mix-blend-mode: screen; 
-          
-          /* Sharpens the gold for the darker footer background */
-          filter: brightness(1.1) contrast(1.2); 
-          
-          /* The same 'crop' trick: scales up and ensures no edge borders show */
-          transform: scale(1.1);
-          border: none;
-          outline: none;
-        }
+    /* Updated Footer Logo with Seamless Blend */
+.brand-col .footer-logo { 
+  height: 80px; /* Slightly larger for the footer layout */
+  width: auto;
+  margin-bottom: 20px; 
+  display: block;
+  
+  /* 1. The "Screen" blend mode removes the black background of the JPEG */
+  mix-blend-mode: screen; 
+  
+  /* 2. Since the footer is very dark, we boost brightness and contrast 
+     to ensure the gold doesn't look 'muddy' */
+  filter: brightness(1.2) contrast(1.3); 
+  
+  /* 3. Scale up slightly to crop any tiny 1px edge artifacts from the JPG */
+  transform: scale(1.15);
+  transform-origin: left center; /* Keeps it aligned to the left while scaling */
+  
+  /* 4. Smooth rendering */
+  image-rendering: -webkit-optimize-contrast;
+}
 
-        /* Container adjustment to ensure the 'scale' doesn't cause layout shifts */
-        .brand-col {
-          overflow: hidden; 
-        }        .brand-story { font-size: 14px; line-height: 1.8; margin-bottom: 25px; color: #a18a5e; }
+/* Container adjustment to handle the scaling */
+.brand-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Prevent the scaled logo from overlapping or getting clipped awkwardly */
+  padding-top: 10px; 
+}
+
+/* Ensure mobile alignment remains centered if needed */
+@media (max-width: 600px) {
+  .brand-col .footer-logo {
+    margin: 0 auto 25px;
+    transform-origin: center;
+  }
+}       .brand-story { font-size: 14px; line-height: 1.8; margin-bottom: 25px; color: #a18a5e; }
         
         .contact-info { margin-bottom: 25px; }
         .contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }

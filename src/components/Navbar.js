@@ -61,7 +61,7 @@ const Navbar = () => {
         {/* 1. Logo (Left on mobile) */}
         <div className="logo-section" style={styles.logoSection}>
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-            <img src="/logo.jpeg" alt="Vanya Logo" style={styles.logoImage} />
+            <img src="/vanyalogo.png" alt="Vanya Logo" style={styles.logoImage} />
           </Link>
         </div>
 
@@ -174,42 +174,46 @@ const styles = {
     top: 0,
     zIndex: 2000,
   },
- logoImage: {
-  height: '60px',        // Increased height to fill the bar vertically
-  width: 'auto',
-  display: 'block',
-  /* 'lighten' or 'screen' removes the black background of a JPEG */
-  mixBlendMode: 'screen', 
-  /* Removes any natural padding the browser might add */
-  padding: 0,
-  margin: 0,
-  /* This ensures the image behaves like a block and fills the height */
-  objectFit: 'contain',
-  /* Slight scale-up helps hide tiny 1px borders often found in JPEGs */
-  transform: 'scale(1.1)', 
-},
+logoImage: {
+    /* 1. Scale the height to almost fill the navbar */
+    height: '50px', 
+    width: 'auto',
+    display: 'block',
+    
+    /* 2. Remove the black background from the JPG */
+    /* 'screen' makes black transparent and keeps lighter colors */
+    mixBlendMode: 'screen', 
+    
+    /* 3. Fine-tuning position */
+    padding: '0',
+    margin: '0',
+    objectFit: 'contain',
+    
+    /* 4. Optional: Subtle brightness boost if the logo looks too dim */
+    filter: 'brightness(1.1) contrast(1.1)',
+  },
 
-logoSection: { 
-  display: 'flex', 
-  alignItems: 'center', 
-  justifyContent: 'center',
-  padding: '0',
-  marginRight: '20px',
-  /* Ensure this container doesn't add extra height */
-  height: '100%',
-  overflow: 'hidden',
-},
+  logoSection: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    padding: '0',
+    /* Ensure the container doesn't restrict the logo height */
+    height: '100%', 
+    overflow: 'visible', 
+  },
 
-navbar: {
-  backgroundColor: '#063b2a', 
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '0 5%', // Reduced vertical padding to 0 so logo can touch edges
-  height: '70px',  // Explicit height helps alignment
-  color: '#d4af37',
-},
-
+  navbar: {
+    backgroundColor: '#063b2a', 
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    /* Vertical padding set to 0 to allow logo to use full height */
+    padding: '0 5%', 
+    height: '70px', 
+    color: '#d4af37',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.1)', // Optional: adds depth
+  },
   navLinks: { display: 'flex', gap: '25px', alignItems: 'center' },
   link: { color: '#ffffff', textDecoration: 'none', fontSize: '13px', fontWeight: '400', letterSpacing: '1px' },
   iconGroup: { display: 'flex', gap: '18px', alignItems: 'center', color: '#d4af37' },
