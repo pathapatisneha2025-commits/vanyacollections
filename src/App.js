@@ -19,6 +19,8 @@ import ProductdetailedPage from "./pages/Productdetailedpage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckouPage";
 import AuthPage from "./pages/AuthPage";
+import OrdersPage from "./pages/OrdersPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -56,7 +58,11 @@ function App() {
       <Route path="/product/:id" element={<ProductdetailedPage />} />
      <Route path="/cart" element={<CartPage />} />
      <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+
           <Route path="/AuthPage" element={<AuthPage />} />
+            <Route path="/ProfilePage" element={<ProfilePage />} />
+
 
 
 
