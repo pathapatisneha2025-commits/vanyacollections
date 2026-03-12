@@ -21,6 +21,7 @@ import CheckoutPage from "./pages/CheckouPage";
 import AuthPage from "./pages/AuthPage";
 import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -30,6 +31,7 @@ import ProfilePage from "./pages/ProfilePage";
 function App() {
   return (
     <Router>
+      <ScrollToTop></ScrollToTop>
       {/* Navbar visible on all pages */}
       <Navbar />
 
