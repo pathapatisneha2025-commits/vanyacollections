@@ -116,7 +116,7 @@ const styles = {
     minHeight: "100vh",
     fontFamily: "'Playfair Display', serif",
     backgroundImage:
-      "url('https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&w=2000&q=80')",
+      "url('/herosection.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     color: "#fff",
