@@ -32,259 +32,187 @@ const isTablet = screen <= 1024;
 
 const styles = {
 
-
 pageContainer:{
 backgroundColor:"#fdfdfb",
 fontFamily:"'Playfair Display', serif",
 color:"#1a1a1a",
 width:"100%",
-maxWidth:"100%",
-overflowX:"hidden"
+maxWidth:"100vw",
+overflowX:"hidden",
+boxSizing:"border-box"
 },
 
 
-
 container:{
-
 width:"100%",
 maxWidth:"1200px",
 margin:"0 auto",
 padding:isMobile?"0 16px":"0 25px",
-boxSizing:"border-box"
-
+boxSizing:"border-box",
+overflow:"hidden"
 },
 
 
-
 containerCenter:{
-
 width:"100%",
 maxWidth:"900px",
 margin:"0 auto",
 textAlign:"center",
 padding:isMobile?"0 16px":"0 25px",
-boxSizing:"border-box"
-
+boxSizing:"border-box",
+overflow:"hidden"
 },
-
 
 
 
 sectionPadding:{
-
-padding:isMobile?"50px 0":"100px 0"
-
+padding:isMobile?"50px 0":"100px 0",
+width:"100%",
+overflow:"hidden"
 },
-
 
 
 
 heroBanner:{
-
 height:isMobile?"280px":"450px",
-
 width:"100%",
-
+maxWidth:"100%",
 backgroundImage:
 'url("https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=2000")',
-
 backgroundSize:"cover",
-
 backgroundPosition:"center",
-
 position:"relative",
-
 display:"flex",
-
 alignItems:"center",
-
 justifyContent:"center",
-
 overflow:"hidden"
-
 },
-
-
 
 
 
 heroOverlay:{
-
 position:"absolute",
-
-inset:0,
-
+top:0,
+left:0,
+right:0,
+bottom:0,
 backgroundColor:"rgba(6,59,42,.7)"
-
 },
-
 
 
 
 heroContent:{
-
 position:"relative",
-
 zIndex:2,
-
 textAlign:"center",
-
 color:"#d4af37",
-
 padding:"20px",
-
-width:"100%"
-
+width:"100%",
+maxWidth:"100%",
+boxSizing:"border-box"
 },
-
 
 
 
 heroSubtitle:{
-
 fontSize:"12px",
-
-letterSpacing:"4px"
-
+letterSpacing:"4px",
+margin:0
 },
-
 
 
 
 heroTitle:{
-
 fontSize:isMobile?"34px":isTablet?"45px":"56px",
-
 fontWeight:"400",
-
 margin:0,
-
-lineHeight:"1.2"
-
+lineHeight:"1.2",
+wordBreak:"break-word"
 },
-
 
 
 
 introGrid:{
-
 display:"grid",
-
 gridTemplateColumns:
-
 isTablet
-
 ?"1fr"
-
 :"repeat(2,minmax(0,1fr))",
 
 gap:isMobile?"40px":"60px",
-
-alignItems:"center"
-
+alignItems:"center",
+width:"100%"
 },
-
 
 
 
 overline:{
-
 color:"#bca172",
-
 fontSize:"11px",
-
 letterSpacing:"2px",
-
 fontWeight:"700"
-
 },
-
 
 
 
 heading:{
-
 fontSize:isMobile?"28px":isTablet?"34px":"42px",
-
 lineHeight:"1.25",
-
 marginBottom:"25px",
-
-fontWeight:"400"
-
+fontWeight:"400",
+wordBreak:"break-word"
 },
-
 
 
 
 paragraph:{
-
 color:"#666",
-
 lineHeight:"1.8",
-
 fontSize:isMobile?"15px":"16px",
-
-marginBottom:"20px"
-
+marginBottom:"20px",
+wordBreak:"break-word"
 },
-
-
 
 
 
 missionCard:{
-
 position:"relative",
-
-width:"100%"
-
+width:"100%",
+maxWidth:"100%"
 },
-
 
 
 
 missionImageContainer:{
-
 height:isMobile?"350px":isTablet?"420px":"500px",
-
 borderRadius:"20px",
-
 overflow:"hidden",
-
-width:"100%"
-
+width:"100%",
+maxWidth:"100%",
+position:"relative"
 },
-
 
 
 
 missionImage:{
-
 width:"100%",
-
 height:"100%",
-
 objectFit:"cover",
-
-display:"block"
-
+display:"block",
+maxWidth:"100%"
 },
-
 
 
 
 missionOverlayCard:{
 
 position:"absolute",
-
 bottom:0,
-
 left:0,
 
 width:isMobile?"85%":"45%",
 
-maxWidth:"100%",
+maxWidth:isMobile?"85%":"45%",
 
 backgroundColor:"#063b2a",
 
@@ -294,274 +222,205 @@ borderTopRightRadius:"20px",
 
 color:"#fff",
 
-boxSizing:"border-box"
+boxSizing:"border-box",
+
+overflow:"hidden",
+
+wordBreak:"break-word"
 
 },
-
 
 
 
 missionTitle:{
-
 color:"#d4af37",
-
-fontSize:"20px"
-
+fontSize:"20px",
+marginTop:0
 },
-
 
 
 
 missionText:{
-
 fontSize:"14px",
-
-lineHeight:"1.5"
-
+lineHeight:"1.5",
+marginBottom:0
 },
-
 
 
 
 statsSection:{
-
 padding:"50px 0",
-
-borderTop:"1px solid #eee"
-
+borderTop:"1px solid #eee",
+width:"100%",
+overflow:"hidden"
 },
-
 
 
 
 statsGrid:{
-
 display:"flex",
-
 justifyContent:"center",
-
+alignItems:"center",
 gap:isMobile?"30px":"100px",
-
 flexWrap:"wrap",
-
 textAlign:"center",
-
 width:"100%"
-
 },
-
 
 
 
 statNumber:{
-
 display:"block",
-
 fontSize:isMobile?"32px":"42px",
-
 color:"#bca172"
-
 },
-
 
 
 
 statLabel:{
-
 fontSize:"14px",
-
 color:"#888"
-
 },
-
 
 
 
 valuesSection:{
-
 padding:isMobile?"50px 0":"100px 0",
-
-backgroundColor:"#f9f9f7"
-
+backgroundColor:"#f9f9f7",
+width:"100%",
+overflow:"hidden"
 },
-
 
 
 
 headingCenter:{
-
 textAlign:"center",
-
 fontSize:isMobile?"30px":"40px",
-
 marginBottom:"40px",
-
-fontWeight:"400"
-
+fontWeight:"400",
+wordBreak:"break-word"
 },
 
 
 
-
 valuesGrid:{
-
 display:"grid",
 
 gridTemplateColumns:
 
 isMobile
-
 ?"1fr"
+:"repeat(4,minmax(0,1fr))",
 
-:"repeat(auto-fit,minmax(250px,1fr))",
+gap:"25px",
 
-gap:"25px"
-
+width:"100%"
 },
-
 
 
 
 valueCard:{
-
 background:"#fff",
-
-padding:isMobile?"25px":"40px",
-
+padding:isMobile?"25px":"30px",
 borderRadius:"15px",
-
 border:"1px solid #eee",
-
-height:"100%"
-
+height:"100%",
+boxSizing:"border-box",
+overflow:"hidden"
 },
-
 
 
 
 valueIcon:{
-
 color:"#bca172",
-
 marginBottom:"15px"
-
 },
-
 
 
 
 valueTitle:{
-
-fontSize:"18px"
-
+fontSize:"18px",
+wordBreak:"break-word"
 },
-
 
 
 
 valueDesc:{
-
 color:"#777",
-
 lineHeight:"1.6",
-
-fontSize:"14px"
-
+fontSize:"14px",
+wordBreak:"break-word"
 },
 
+
+
 quoteSection:{
-
 padding:isMobile?"60px 0":"120px 0",
-
 backgroundColor:"#063b2a",
-
 color:"#d4af37",
-
-textAlign:"center"
-
+textAlign:"center",
+width:"100%",
+overflow:"hidden"
 },
 
 
 
 quoteIconCircle:{
-
 width:"60px",
-
 height:"60px",
-
 borderRadius:"50%",
-
 display:"flex",
-
 alignItems:"center",
-
 justifyContent:"center",
-
 margin:"0 auto 25px",
-
 border:"1px solid #d4af37"
-
 },
-
 
 
 
 quoteText:{
-
 fontSize:isMobile?"18px":isTablet?"24px":"28px",
-
 fontStyle:"italic",
-
 lineHeight:"1.6",
-
-padding:"0 10px"
-
+padding:"0 10px",
+maxWidth:"100%",
+overflowWrap:"break-word"
 },
 
 
 
-
 quoteAuthor:{
-
 fontSize:"18px"
-
 },
 
 
 
 quoteSubtext:{
-
 fontSize:"12px",
-
 color:"#fff"
-
 },
 
 
 
-
 teamGrid:{
-
 display:"grid",
 
 gridTemplateColumns:
 
 isMobile
-
 ?"1fr"
 
 :isTablet
-
-?"repeat(2,1fr)"
+?"repeat(2,minmax(0,1fr))"
 
 :"repeat(3,minmax(0,1fr))",
 
 gap:"40px",
 
-textAlign:"center"
+textAlign:"center",
 
+width:"100%"
 },
-
 
 
 
@@ -593,25 +452,17 @@ border:"2px solid #d4af37"
 
 
 
-
 teamName:{
-
-fontSize:"20px"
-
+fontSize:"20px",
+wordBreak:"break-word"
 },
 
 
 
-
 teamRole:{
-
 color:"#888",
-
 fontSize:"14px"
-
 }
-
-
 
 };
 
