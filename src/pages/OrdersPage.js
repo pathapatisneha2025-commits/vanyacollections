@@ -18,7 +18,7 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `https://vanyabackenddatabase.onrender.com/orders/user/${userId}`
+          `https://vanyabackenddatabase-vahr.onrender.com/orders/user/${userId}`
         );
         if (!res.ok) throw new Error("Failed to fetch orders");
         const data = await res.json();

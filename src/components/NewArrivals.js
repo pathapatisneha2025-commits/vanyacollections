@@ -10,7 +10,7 @@ const NewArrivals = () => {
 
   const fetchNewArrivals = async () => {
     try {
-      const res = await fetch("https://vanyabackenddatabase.onrender.com/products/all");
+      const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/products/all");
       const data = await res.json();
       // Filter only "New Arrival" products
       const newArrivals = data.filter((p) => p.type === "New Arrival");

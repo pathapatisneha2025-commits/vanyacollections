@@ -11,7 +11,7 @@ const CollectionsPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('https://vanyabackenddatabase.onrender.com/products/all');
+        const res = await fetch('https://vanyabackenddatabase-vahr.onrender.com/products/all');
         const data = await res.json();
 
         const mappedProducts = data.map(item => ({

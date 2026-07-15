@@ -200,7 +200,7 @@ const displayedProducts = products
 
   const fetchReviewsForProduct = async (productId) => {
   try {
-    const res = await fetch(`https://vanyabackenddatabase.onrender.com/review/${productId}`);
+    const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/review/${productId}`);
     const data = await res.json();
     return data; // array of reviews
   } catch (err) {
@@ -211,7 +211,7 @@ const displayedProducts = products
 useEffect(() => {
   const fetchProducts = async () => {
     try {
-      const response = await fetch('https://vanyabackenddatabase.onrender.com/products/all');
+      const response = await fetch('https://vanyabackenddatabase-vahr.onrender.com/products/all');
       const productsData = await response.json();
 
       // Fetch reviews for each product
@@ -263,7 +263,7 @@ const handleAddToCart = async (product) => {
   const userId = user.id;                // extract the numeric id
 
   try {
-    const response = await fetch("https://vanyabackenddatabase.onrender.com/cart/add", {
+    const response = await fetch("https://vanyabackenddatabase-vahr.onrender.com/cart/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

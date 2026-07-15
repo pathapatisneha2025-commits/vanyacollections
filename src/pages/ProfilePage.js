@@ -20,7 +20,7 @@ const ProfilePage = () => {
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `https://vanyabackenddatabase.onrender.com/auth/users/${id}`
+          `https://vanyabackenddatabase-vahr.onrender.com/auth/users/${id}`
         );
         if (!res.ok) throw new Error("Failed to fetch user data");
         const data = await res.json();

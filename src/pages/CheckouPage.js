@@ -49,7 +49,7 @@ const placeOrder = async () => {
   setLoading(true);
 
   try {
-    const res = await fetch('https://vanyabackenddatabase.onrender.com/orders/add', {
+    const res = await fetch('https://vanyabackenddatabase-vahr.onrender.com/orders/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

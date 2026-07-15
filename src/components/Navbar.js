@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, User, Heart, ShoppingBag, Menu, X } from 'lucide-react';
 import CartPage from '../pages/CartPage';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
@@ -26,7 +27,7 @@ const Navbar = () => {
     const fetchCart = async () => {
       if (user) {
         try {
-          const res = await fetch(`https://vanyabackenddatabase.onrender.com/cart/${user.id}`);
+          const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/cart/${user.id}`);
           const data = await res.json();
           setCartItems(data.items || []);
         } catch (err) {
@@ -83,18 +84,39 @@ const Navbar = () => {
               <button style={styles.userDropdownBtn} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                 <User size={22} style={styles.icon} />
               </button>
-              {isDropdownOpen && (
-                <div style={styles.userDropdownMenu}>
-                  <button onClick={handleLogout} style={styles.dropdownItemBtn}>Logout</button>
-                </div>
-              )}
+             {isDropdownOpen && (
+  <div style={styles.userDropdownMenu}>
+
+    <button
+      onClick={() => {
+        navigate("/ProfilePage");
+        setIsDropdownOpen(false);
+      }}
+      style={styles.dropdownItemBtn}
+    >
+      My Profile
+    </button>
+
+    <button
+      onClick={handleLogout}
+      style={styles.dropdownItemBtn}
+    >
+      Logout
+    </button>
+
+  </div>
+)}
             </div>
           ) : (
             <Link to="/AuthPage"><User size={22} style={styles.icon} /></Link>
           )}
           
-          <Heart size={20} style={styles.icon} />
-          
+<div
+  style={{ cursor: "pointer", position: "relative" }}
+  onClick={() => navigate("/wishlist")}
+>
+  <Heart size={20} style={styles.icon} />
+</div>          
           <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsCartOpen(true)}>
             <ShoppingBag size={22} style={styles.icon} />
             {cartItems.length > 0 && (

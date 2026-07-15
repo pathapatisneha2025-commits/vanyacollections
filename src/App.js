@@ -22,6 +22,7 @@ import AuthPage from "./pages/AuthPage";
 import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
+import Wishlist from "./pages/Wishlist";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -63,6 +64,7 @@ function App() {
 
           <Route path="/AuthPage" element={<AuthPage />} />
             <Route path="/ProfilePage" element={<ProfilePage />} />
+            <Route path="/wishlist" element={<Wishlist />} />
 
 
 

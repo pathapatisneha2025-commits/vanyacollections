@@ -12,6 +12,7 @@
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   const [reviews, setReviews] = useState([]);
+  const [wishlisted, setWishlisted] = useState(false);
   const [newReview, setNewReview] = useState({
     rating: 5,
     comment: ""
@@ -34,18 +35,21 @@ const totalPrice = product ? product.price * quantity : 0;
   const fetchReviews = async () => {
     try {
       const res = await fetch(
-        `https://vanyabackenddatabase.onrender.com/review/${id}`
+        `https://vanyabackenddatabase-vahr.onrender.com/review/${id}`
       );
       const data = await res.json();
-      setReviews(data);
-    } catch (err) {
+setReviews(
+  Array.isArray(data)
+    ? data
+    : data.reviews || data.data || []
+);    } catch (err) {
       console.error(err);
     }
   };
   useEffect(() => {
       const fetchProductData = async () => {
         try {
-          const res = await fetch("https://vanyabackenddatabase.onrender.com/products/all");
+          const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/products/all");
           const data = await res.json();
           
           const selectedProduct = data.find((item) => item.id === Number(id));
@@ -82,7 +86,7 @@ const addToCart = async (productId, qty = 1) => {
     const user = JSON.parse(storedUser);
     const userId = user.id;
 
-    const res = await fetch("https://vanyabackenddatabase.onrender.com/cart/add", {
+    const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/cart/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: userId, product_id: productId, quantity: qty }),
@@ -107,6 +111,61 @@ const addToCart = async (productId, qty = 1) => {
     alert("Error adding to cart: " + err.message);
   }
 };
+const addWishlist = async () => {
+
+  try {
+
+    const storedUser = localStorage.getItem("user");
+
+
+    if (!storedUser) {
+      alert("Please login to add wishlist");
+      navigate("/login");
+      return;
+    }
+
+
+    const user = JSON.parse(storedUser);
+
+
+    const res = await fetch(
+      "https://vanyabackenddatabase-vahr.onrender.com/review/wishlist/add",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          user_id:user.id,
+          product_id:product.id
+        })
+      }
+    );
+
+
+    const data = await res.json();
+
+
+    if(!res.ok){
+      throw new Error(data.error);
+    }
+
+
+    setWishlisted(true);
+
+
+    alert("Added to wishlist ❤️");
+
+
+  }
+  catch(err){
+
+    console.log(err);
+    alert("Wishlist failed");
+
+  }
+
+};
 const handleBuyNow = async () => {
   const storedUser = localStorage.getItem("user");
   if (!storedUser) {
@@ -121,7 +180,7 @@ const handleBuyNow = async () => {
   try {
     // 1️⃣ Add product to cart
     const addRes = await fetch(
-      "https://vanyabackenddatabase.onrender.com/cart/add",
+      "https://vanyabackenddatabase-vahr.onrender.com/cart/add",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,7 +199,7 @@ const handleBuyNow = async () => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // 3️⃣ Fetch updated cart
-    const cartRes = await fetch(`https://vanyabackenddatabase.onrender.com/cart/${userId}`);
+    const cartRes = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/cart/${userId}`);
     if (!cartRes.ok) throw new Error("Failed to fetch cart");
 
     const cartData = await cartRes.json();
@@ -182,7 +241,7 @@ const handleBuyNow = async () => {
 
     try {
       const res = await fetch(
-        "https://vanyabackenddatabase.onrender.com/review/add",
+        "https://vanyabackenddatabase-vahr.onrender.com/review/add",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -319,11 +378,39 @@ const handleBuyNow = async () => {
   >
     <span style={{ marginRight: '8px' }}>👜</span> Add to Bag
   </button>
-                <button className="pd-icon-btn" title="Wishlist">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
+               <button 
+className="pd-icon-btn" 
+title="Wishlist"
+onClick={addWishlist}
+>
+
+<svg 
+width="20" 
+height="20" 
+viewBox="0 0 24 24"
+fill={wishlisted ? "#d4af37":"none"}
+stroke={wishlisted ? "#d4af37":"currentColor"}
+strokeWidth="2"
+strokeLinecap="round"
+strokeLinejoin="round"
+>
+
+<path d="
+M20.84 4.61
+a5.5 5.5 0 0 0-7.78 0
+L12 5.67
+l-1.06-1.06
+a5.5 5.5 0 0 0-7.78 7.78
+l1.06 1.06
+L12 21.23
+l7.78-7.78
+1.06-1.06
+a5.5 5.5 0 0 0 0-7.78z">
+</path>
+
+</svg>
+
+</button>
                 <button 
                   className="pd-icon-btn" 
                   title="Share"

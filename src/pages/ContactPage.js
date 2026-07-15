@@ -23,7 +23,7 @@ const ContactPage = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('https://vanyabackenddatabase.onrender.com/contact/add', {
+      const res = await fetch('https://vanyabackenddatabase-vahr.onrender.com/contact/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

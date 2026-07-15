@@ -37,7 +37,7 @@ const AuthPage = () => {
         ? { fullName: formData.fullName, email: formData.email, password: formData.password }
         : { email: formData.email, password: formData.password };
 
-      const res = await fetch(`https://vanyabackenddatabase.onrender.com/auth/${endpoint}`, {
+      const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -106,28 +106,30 @@ navigate('/', { state: { user: data.user } });      }
 
             <div style={styles.inputGroup}>
               <span style={styles.icon}>✉️</span>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                style={styles.input}
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+             <input
+  type="email"
+  name="email"
+  autoComplete="off"
+  placeholder="Email Address"
+  style={styles.input}
+  value={formData.email}
+  onChange={handleChange}
+  required
+/>
             </div>
 
             <div style={styles.inputGroup}>
               <span style={styles.icon}>🔒</span>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                style={styles.input}
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+             <input
+  type="password"
+  name="password"
+  autoComplete="new-password"
+  placeholder="Password"
+  style={styles.input}
+  value={formData.password}
+  onChange={handleChange}
+  required
+/>
             </div>
 
             {isSignUp && (
