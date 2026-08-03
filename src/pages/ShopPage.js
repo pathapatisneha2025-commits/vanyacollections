@@ -88,8 +88,9 @@ const styles = `
   .product-card {
     background: white;
     position: relative;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     transition: transform 0.3s;
   }
   
@@ -110,8 +111,8 @@ const styles = `
   .product-card:hover .hover-actions { transform: translateY(0); }
   .product-card:hover .product-img { transform: scale(1.05); }
 
-  .btn-cart { flex: 2; background: var(--accent-gold); border: none; padding: 10px; cursor: pointer; font-weight: bold; color: white; border-radius: 2px; }
-  .btn-view { flex: 1; background: white; border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 2px; font-size: 0.8rem; }
+  .btn-cart { flex: 2; background: var(--accent-gold); border: none; padding: 10px; cursor: pointer; font-weight: bold; color: white; border-radius: 4px; }
+  .btn-view { flex: 1; background: white; border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
 
   .badge {
     position: absolute; top: 10px; left: 10px; padding: 4px 10px;
@@ -132,8 +133,7 @@ const styles = `
     cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2;
   }
 
- /* Product Info UI */
- /* Product Info */
+  /* Product Info */
   .product-info { padding: 15px; }
   .product-cat { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
   .product-name { font-weight: 500; margin: 6px 0; font-size: 1.1rem; color: #222; }
@@ -145,105 +145,50 @@ const styles = `
   .price-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
   .current-price { color: #d4af37; font-weight: 700; font-size: 1.3rem; }
   .old-price { text-decoration: line-through; color: #bbb; font-size: 0.95rem; }
-  .cart-popup {
-  background:white;
-  width:350px;
-  padding:30px;
-  border-radius:20px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
-  animation:popupShow .3s ease;
-}
 
+  .cart-success-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(6,59,42,0.35);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+  }
 
-.cart-success-overlay{
+  .cart-success-box{
+    width:360px;
+    background:#ffffff;
+    padding:35px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    animation:cartPopup .3s ease;
+  }
 
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  .cart-success-icon{
+   font-size:55px;
+   margin-bottom:15px;
+  }
 
-  background:rgba(6,59,42,0.35);
+  .cart-success-box h3{
+   color:#063b2a;
+   font-size:22px;
+   margin-bottom:10px;
+  }
 
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  .cart-success-box p{
+   color:#666;
+   font-size:15px;
+  }
 
-  z-index:99999;
-
-}
-
-
-.cart-success-box{
-
-  width:360px;
-
-  background:#ffffff;
-
-  padding:35px;
-
-  border-radius:25px;
-
-  text-align:center;
-
-  box-shadow:
-  0 15px 40px rgba(0,0,0,0.25);
-
-  animation:cartPopup .3s ease;
-
-}
-
-
-.cart-success-icon{
-
- font-size:55px;
-
- margin-bottom:15px;
-
-}
-
-
-.cart-success-box h3{
-
- color:#063b2a;
-
- font-size:22px;
-
- margin-bottom:10px;
-
-}
-
-
-.cart-success-box p{
-
- color:#666;
-
- font-size:15px;
-
-}
-
-
-@keyframes cartPopup{
-
- from{
-
- transform:scale(.7);
-
- opacity:0;
-
- }
-
-
- to{
-
- transform:scale(1);
-
- opacity:1;
-
- }
-
-}
+  @keyframes cartPopup{
+    from{ transform:scale(.7); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+  }
 
   /* Mobile Responsive */
   @media (max-width: 768px) {
@@ -259,245 +204,216 @@ const styles = `
       background: rgba(0,0,0,0.5); z-index: 1000; display: none;
     }
     .sidebar-overlay.visible { display: block; }
-    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-    .image-container { height: 260px; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .image-container { height: 210px; }
+    
     .cart-popup-overlay {
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.35);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.35);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+    }
 
+    @keyframes popupShow {
+      from { transform:scale(.8); opacity:0; }
+      to { transform:scale(1); opacity:1; }
+    }
 
+    /* Elegant Mobile Action Buttons Bar */
+    .hover-actions {
+      transform: translateY(0) !important;
+      background: rgba(26, 60, 52, 0.85); /* Semi-transparent dark green to match theme */
+      backdrop-filter: blur(4px);
+      padding: 6px;
+      gap: 6px;
+    }
 
+    .btn-view {
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      color: var(--primary-green);
+      font-weight: 600;
+      padding: 8px 4px;
+      font-size: 0.7rem;
+      border-radius: 3px;
+    }
 
-@keyframes popupShow {
-  from {
-    transform:scale(.8);
-    opacity:0;
-  }
-  to {
-    transform:scale(1);
-    opacity:1;
-  }
-}
-    .hover-actions { display: none; } /* Hide hover actions on mobile for better UX */
+    .btn-cart {
+      background: var(--accent-gold);
+      color: white;
+      font-weight: 600;
+      padding: 8px 4px;
+      font-size: 0.75rem;
+      border-radius: 3px;
+    }
+    
+    .product-info { padding: 10px; }
+    .product-name { font-size: 0.95rem; }
+    .current-price { font-size: 1.1rem; }
   }
 `;
 
-// const PRODUCTS = [
-//   { id: 1, name: "Royal Blue Kanjeevaram", cat: "SILK SAREES", price: 11999, rating: 5, reviews: 64,oldPrice: 16999, badge: "NEW", discount: "-29%", img: "/silksaree.jpg" },
-//   { id: 2, name: "Emerald Garden Silk", cat: "SILK SAREES", price: 7499,rating: 5, reviews: 64, oldPrice: 9999, badge: "NEW", discount: "-25%", img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=400" },
-//   { id: 3, name: "Peach Bridal Elegance", cat: "BRIDAL", price: 24500,rating: 5, reviews: 64, oldPrice: 35000, badge: "BESTSELLER", discount: "-29%", img: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=400" },
-//   { id: 4, name: "Crimson Banarasi", cat: "FESTIVAL", price: 18200,rating: 5, reviews: 64, oldPrice: 26000, badge: "BESTSELLER", discount: "-31%", img: "/festivalsaree.jpg" }
-// ];
-
 export default function ShopPage() {
  const [price, setPrice] = useState(35000);
-  const [activeColor, setActiveColor] = useState('All');
-  const [activeOccasion, setActiveOccasion] = useState('All');
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [sortOption, setSortOption] = useState("Featured");
-const [products, setProducts] = useState([]);
-const [loading, setLoading] = useState(true);
-const [cartPopup, setCartPopup] = useState({
-  show: false,
-  message: ''
-});
-const showCartPopup = (message) => {
+ const [activeColor, setActiveColor] = useState('All');
+ const [activeOccasion, setActiveOccasion] = useState('All');
+ const [isSidebarOpen, setSidebarOpen] = useState(false);
+ const [sortOption, setSortOption] = useState("Featured");
+ const [products, setProducts] = useState([]);
+ const [loading, setLoading] = useState(true);
+ const [cartPopup, setCartPopup] = useState({
+   show: false,
+   message: ''
+ });
 
-  setCartPopup({
-    show:true,
-    message
-  });
+ const showCartPopup = (message) => {
+   setCartPopup({ show: true, message });
+   setTimeout(() => {
+     setCartPopup({ show: false, message: "" });
+   }, 2000);
+ };
 
+ const navigate = useNavigate();
 
-  setTimeout(() => {
+ const displayedProducts = products
+   .filter(p => {
+     const withinPrice = p.price <= Number(price);
+     const matchesOccasion =
+       activeOccasion === 'All' || p.cat.toLowerCase().includes(activeOccasion.toLowerCase());
+     const matchesColor =
+       activeColor === 'All' || (p.color && p.color.toLowerCase() === activeColor.toLowerCase());
+     return withinPrice && matchesOccasion && matchesColor;
+   })
+   .sort((a, b) => {
+     if (sortOption === "Price: Low to High") return a.price - b.price;
+     if (sortOption === "Price: High to Low") return b.price - a.price;
+     return 0;
+   });
 
-    setCartPopup({
-      show:false,
-      message:""
-    });
+ const fetchReviewsForProduct = async (productId) => {
+   try {
+     const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/review/${productId}`);
+     const data = await res.json();
+     return data;
+   } catch (err) {
+     console.error("Failed to fetch reviews for product:", err);
+     return [];
+   }
+ };
 
-  },2000);
+ useEffect(() => {
+   const fetchProducts = async () => {
+     try {
+       const response = await fetch('https://vanyabackenddatabase-vahr.onrender.com/products/all');
+       const productsData = await response.json();
 
-};
-const navigate = useNavigate();
+       const productsWithReviews = await Promise.all(
+         productsData.map(async (item) => {
+           const reviews = await fetchReviewsForProduct(item.id);
+           const totalReviews = reviews.length;
+           const avgRating = totalReviews
+             ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+             : 0;
+           const roundedRating = Math.round(avgRating * 10) / 10;
 
+           return {
+             id: item.id,
+             name: item.name,
+             cat: item.category,
+             price: Number(item.price),
+             oldPrice: Number(item.old_price),
+             rating: roundedRating,
+             reviews: totalReviews,
+             badge: Number(item.discount) > 20 ? 'BESTSELLER' : 'NEW',
+             discount: `-${item.discount}%`,
+             img: item.img_url || item.thumbnails[0],
+           };
+         })
+       );
 
-const displayedProducts = products
-  .filter(p => {
-    const withinPrice = p.price <= Number(price);
-    const matchesOccasion =
-      activeOccasion === 'All' || p.cat.toLowerCase().includes(activeOccasion.toLowerCase());
-    const matchesColor =
-      activeColor === 'All' || (p.color && p.color.toLowerCase() === activeColor.toLowerCase());
-    return withinPrice && matchesOccasion && matchesColor;
-  })
-  .sort((a, b) => {
-    if (sortOption === "Price: Low to High") return a.price - b.price;
-    if (sortOption === "Price: High to Low") return b.price - a.price;
-    return 0; // Featured/default order
-  });
+       setProducts(productsWithReviews);
+     } catch (error) {
+       console.error("Failed to fetch products:", error);
+     } finally {
+       setLoading(false);
+     }
+   };
 
-  const fetchReviewsForProduct = async (productId) => {
-  try {
-    const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/review/${productId}`);
-    const data = await res.json();
-    return data; // array of reviews
-  } catch (err) {
-    console.error("Failed to fetch reviews for product:", err);
-    return [];
-  }
-};  
-useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('https://vanyabackenddatabase-vahr.onrender.com/products/all');
-      const productsData = await response.json();
+   fetchProducts();
+ }, []);
 
-      // Fetch reviews for each product
-      const productsWithReviews = await Promise.all(
-        productsData.map(async (item) => {
-          const reviews = await fetchReviewsForProduct(item.id);
-          const totalReviews = reviews.length;
-         const avgRating = totalReviews
-  ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
-  : 0;
-const roundedRating = Math.round(avgRating * 10) / 10; // e.g., 4.3
+ const handleAddToCart = async (product) => {
+   const storedUser = localStorage.getItem("user");
 
-          return {
-            id: item.id,
-            name: item.name,
-            cat: item.category,
-            price: Number(item.price),
-            oldPrice: Number(item.old_price),
-            rating: roundedRating,
-            reviews: totalReviews,
-            badge: Number(item.discount) > 20 ? 'BESTSELLER' : 'NEW',
-            discount: `-${item.discount}%`,
-            img: item.img_url || item.thumbnails[0],
-          };
-        })
-      );
+   if(!storedUser){
+     showCartPopup("Please login to add products to your bag");
+     setTimeout(()=>{
+       navigate("/login");
+     },1500);
+     return;
+   }
 
-      setProducts(productsWithReviews);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+   const user = JSON.parse(storedUser);
 
-  fetchProducts();
-}, []);
+   try{
+     const response = await fetch(
+       "https://vanyabackenddatabase-vahr.onrender.com/cart/add",
+       {
+         method:"POST",
+         headers:{ "Content-Type":"application/json" },
+         body:JSON.stringify({
+           user_id: user.id,
+           product_id: product.id,
+           quantity: 1
+         })
+       }
+     );
 
-// Inside your ShopPage component, above the return:
-const handleAddToCart = async (product) => {
+     if(response.ok){
+       showCartPopup(`${product.name} added to your bag`);
+     } else {
+       showCartPopup("Unable to add item");
+     }
+   } catch(error){
+     console.log(error);
+     showCartPopup("Something went wrong");
+   }
+ };
 
-  const storedUser = localStorage.getItem("user");
+ return (
+   <>
+     <style>{styles}</style>
+     
+     <header className="banner">
+       <p style={{fontSize: '0.8rem', letterSpacing: '2px'}}>TRADITIONAL WEAVES</p>
+       <h1>All Sarees</h1>
+       <p>{products.length} curated designs</p>
+     </header>
 
+     <div className="top-filter-bar">
+       <button className="btn-filters-toggle" onClick={() => setSidebarOpen(true)}>☰ FILTERS</button>
+       <div className="results-count" style={{fontSize: '0.9rem', color: '#666'}}>Showing all {products.length} products</div>
+       <select 
+         className="sort-dropdown"
+         value={sortOption}              
+         onChange={(e) => setSortOption(e.target.value)}
+       >
+         <option>Featured</option>
+         <option>Price: Low to High</option>
+         <option>Price: High to Low</option>
+       </select>
+     </div>
 
-  if(!storedUser){
+     <div className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} onClick={() => setSidebarOpen(false)}></div>
 
-    showCartPopup(
-      "Please login to add products to your bag"
-    );
-
-    setTimeout(()=>{
-      navigate("/login");
-    },1500);
-
-    return;
-
-  }
-
-
-  const user = JSON.parse(storedUser);
-
-
-  try{
-
-    const response = await fetch(
-      "https://vanyabackenddatabase-vahr.onrender.com/cart/add",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-
-          user_id:user.id,
-          product_id:product.id,
-          quantity:1
-
-        })
-      }
-    );
-
-
-    if(response.ok){
-
-      showCartPopup(
-        `${product.name} added to your bag`
-      );
-
-    }
-    else{
-
-      showCartPopup(
-        "Unable to add item"
-      );
-
-    }
-
-
-  }
-  catch(error){
-
-    console.log(error);
-
-    showCartPopup(
-      "Something went wrong"
-    );
-
-  }
-
-};
-  return (
-    <>
-      <style>{styles}</style>
-      
-      <header className="banner">
-        <p style={{fontSize: '0.8rem', letterSpacing: '2px'}}>TRADITIONAL WEAVES</p>
-        <h1>All Sarees</h1>
-        <p>{products.length} curated designs</p>
-      </header>
-
-      <div className="top-filter-bar">
-        <button className="btn-filters-toggle" onClick={() => setSidebarOpen(true)}>☰ FILTERS</button>
-        <div className="results-count" style={{fontSize: '0.9rem', color: '#666'}}>Showing all {products.length} products</div>
-      <select 
-  className="sort-dropdown"
-  value={sortOption}                     // bind to state
-  onChange={(e) => setSortOption(e.target.value)} // update state on change
->
-  <option>Featured</option>
-  <option>Price: Low to High</option>
-  <option>Price: High to Low</option>
-</select>
-      </div>
-
-      <div className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} onClick={() => setSidebarOpen(false)}></div>
-
-      <div className="shop-container">
-     <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+     <div className="shop-container">
+       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
           <div className="filter-section">
             <h3>Price Range</h3>
             <input 
@@ -554,79 +470,59 @@ const handleAddToCart = async (product) => {
           </div>
         </aside>    
 
-  <main className="product-grid">
-  {loading ? (
-    <p>Loading products...</p>
-  ) : displayedProducts.length === 0 ? (
-    <p>No products match your filters.</p>
-  ) : (
-    displayedProducts.map(product => (
-      <div key={product.id} className="product-card">
-        <div className="image-container">
-          <img src={product.img} alt={product.name} className="product-img" />
-          <div className="hover-actions">
-            <button
-              className="btn-view"
-              onClick={() => navigate(`/product/${product.id}`)}
-            >
-              👁 Quick View
-            </button>
-            <button className="btn-cart" onClick={() => handleAddToCart(product)}>
-              🛒 Add to Cart
-            </button>
+      <main className="product-grid">
+        {loading ? (
+          <p>Loading products...</p>
+        ) : displayedProducts.length === 0 ? (
+          <p>No products match your filters.</p>
+        ) : (
+          displayedProducts.map(product => (
+            <div key={product.id} className="product-card">
+              <div className="image-container">
+                <img src={product.img} alt={product.name} className="product-img" />
+                <div className="hover-actions">
+                  <button
+                    className="btn-view"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
+                    👁 View
+                  </button>
+                  <button className="btn-cart" onClick={() => handleAddToCart(product)}>
+                    🛒 Add to Cart
+                  </button>
+                </div>
+              </div>
+              <div className="product-info">
+                <p className="product-cat">{product.cat}</p>
+                <h2 className="product-name">{product.name}</h2>
+                <div className="rating-row">
+                  <div className="stars">
+                    {"★".repeat(Math.floor(product.rating))}
+                    {product.rating % 1 >= 0.5 ? "½" : ""}
+                    {"☆".repeat(5 - Math.ceil(product.rating))}
+                  </div>
+                  <span className="review-count">({product.reviews || 0})</span>
+                </div>
+                <div className="price-row">
+                  <span className="current-price">₹{product.price.toLocaleString()}</span>
+                  <span className="old-price">₹{product.oldPrice.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </main>
+
+      {cartPopup.show && (
+        <div className="cart-success-overlay">
+          <div className="cart-success-box">
+            <div className="cart-success-icon">🛒</div>
+            <h3>Cart Updated</h3>
+            <p>{cartPopup.message}</p>
           </div>
         </div>
-        <div className="product-info">
-          <p className="product-cat">{product.cat}</p>
-          <h2 className="product-name">{product.name}</h2>
-          <div className="rating-row">
-      <div className="stars">
-  {"★".repeat(Math.floor(product.rating))}
-  {product.rating % 1 >= 0.5 ? "½" : ""}
-  {"☆".repeat(5 - Math.ceil(product.rating))}
-</div>
-      <span className="review-count">({product.reviews || 0})</span>
-    </div>
-          <div className="price-row">
-            <span className="current-price">₹{product.price.toLocaleString()}</span>
-            <span className="old-price">₹{product.oldPrice.toLocaleString()}</span>
-          </div>
-        </div>
-      
-      </div>
-    ))
-  )}
-</main>
- {cartPopup.show && (
-
-<div className="cart-success-overlay">
-
-
- <div className="cart-success-box">
-
-
-   <div className="cart-success-icon">
-      🛒
-   </div>
-
-
-   <h3>
-      Cart Updated
-   </h3>
-
-
-   <p>
-      {cartPopup.message}
-   </p>
-
-
- </div>
-
-
-</div>
-
-)}
-      </div>
-    </>
-  );
+      )}
+     </div>
+   </>
+ );
 }
