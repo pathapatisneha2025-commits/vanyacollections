@@ -9,6 +9,16 @@ const cartItems = Array.isArray(locationState.items) ? locationState.items : [];
 const totalAmount = locationState.totalAmount ?? cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);  const [step, setStep] = useState('address'); // 'address' or 'payment'
   const [selectedMethod, setSelectedMethod] = useState('cod');
     const [loading, setLoading] = useState(false); // loading state
+    const [validationPopup, setValidationPopup] = useState({
+  show: false,
+  message: ''
+});
+const showValidationError = (message) => {
+  setValidationPopup({
+    show: true,
+    message
+  });
+};
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -20,61 +30,152 @@ const totalAmount = locationState.totalAmount ?? cartItems.reduce((acc, item) =>
     state: '',
     address: ''
   });
+ const validateAddress = () => {
+  const requiredFields = [
+    'fullName',
+    'phone',
+    'email',
+    'pinCode',
+    'city',
+    'state',
+    'address'
+  ];
+
+  for (let field of requiredFields) {
+    if (!formData[field] || formData[field].trim() === '') {
+      showValidationError(
+        `Please enter your ${
+          field === 'fullName'
+            ? 'Full Name'
+            : field.charAt(0).toUpperCase() + field.slice(1)
+        }`
+      );
+      return false;
+    }
+  }
+
+
+  if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    showValidationError("Please enter a valid 10 digit mobile number");
+    return false;
+  }
+
+
+  if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+    showValidationError("Please enter a valid email address");
+    return false;
+  }
+
+
+  if (!/^\d{6}$/.test(formData.pinCode)) {
+    showValidationError("Please enter a valid 6 digit PIN code");
+    return false;
+  }
+
+  return true;
+};
 const placeOrder = async () => {
+
   const storedUser = localStorage.getItem('user');
+
   if (!storedUser) {
-    alert('Please login to place an order.');
-    navigate('/login');
+    showValidationError("Please login to place an order.");
+    setTimeout(() => {
+      navigate('/login');
+    }, 1500);
     return;
   }
+
 
   const user = JSON.parse(storedUser);
   const userId = user.id;
 
+
   if (!cartItems.length) {
-    alert('Cart is empty!');
+    showValidationError("Your cart is empty!");
     return;
   }
 
-  // ✅ Check if address fields are filled
-  const requiredFields = ['fullName','phone','email','pinCode','city','state','address'];
-  for (let field of requiredFields) {
-    if (!formData[field] || formData[field].trim() === '') {
-      alert(`Please fill your ${field === 'fullName' ? 'Full Name' : field}`);
-      setStep('address'); // go back to address step
-      return;
-    }
+
+  // Validate address before placing order
+  if (!validateAddress()) {
+    setStep('address');
+    return;
   }
+
 
   setLoading(true);
 
+
   try {
-    const res = await fetch('https://vanyabackenddatabase-vahr.onrender.com/orders/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: userId,
-        formData,
-        cartItems,
-        paymentMethod: selectedMethod,
-        totalAmount: subtotal
-      }),
-    });
+
+    const res = await fetch(
+      'https://vanyabackenddatabase-vahr.onrender.com/orders/add',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          user_id:userId,
+          formData,
+          cartItems,
+          paymentMethod:selectedMethod,
+          totalAmount:subtotal
+        }),
+      }
+    );
+
 
     const data = await res.json();
+
     setLoading(false);
 
-    if (res.ok) {
-      alert('Order placed successfully!');
-      navigate(`/order-confirmation/${data.orderId}`, { state: { orderId: data.orderId } });
-    } else {
-      alert(data.message || 'Failed to place order');
+
+    if(res.ok){
+
+      setValidationPopup({
+        show:true,
+        message:"Order placed successfully!"
+      });
+
+
+      setTimeout(()=>{
+
+        navigate(
+          `/order-confirmation/${data.orderId}`,
+          {
+            state:{
+              orderId:data.orderId
+            }
+          }
+        );
+
+      },1500);
+
+
     }
-  } catch (err) {
+    else{
+
+      showValidationError(
+        data.message || "Failed to place order"
+      );
+
+    }
+
+
+  } catch(err){
+
     console.error(err);
+
     setLoading(false);
-    alert('Server error! Please try again.');
+
+    showValidationError(
+      "Server error! Please try again."
+    );
+
   }
+
 };
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -110,6 +211,72 @@ const placeOrder = async () => {
         .item-row img { width:60px; height:75px; object-fit:cover; border-radius:8px; }
         .total-row { display:flex; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid #f0f0f0; }
         .total-value { font-size:22px; font-weight:700; color:#b8860b; }
+        .popup-overlay {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+
+.validation-popup {
+  width:350px;
+  background:white;
+  border-radius:20px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  animation:popupScale .25s ease;
+}
+
+
+.popup-icon {
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+
+.validation-popup h3 {
+  color:#063b2a;
+  margin-bottom:10px;
+}
+
+
+.validation-popup p {
+  color:#555;
+  font-size:14px;
+  margin-bottom:25px;
+}
+
+
+.validation-popup button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:#063b2a;
+  color:#d4af37;
+  font-weight:700;
+  cursor:pointer;
+}
+
+
+@keyframes popupScale {
+  from {
+    transform:scale(.8);
+    opacity:0;
+  }
+  to {
+    transform:scale(1);
+    opacity:1;
+  }
+}
         @media (max-width: 992px) { .checkout-layout { grid-template-columns:1fr; } }
       `}</style>
 
@@ -137,9 +304,16 @@ const placeOrder = async () => {
                   <textarea rows="3" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}></textarea>
                 </div>
               </div>
-              <button className="primary-btn" onClick={() => setStep('payment')}>
-                Continue to Payment →
-              </button>
+             <button
+  className="primary-btn"
+  onClick={() => {
+    if (validateAddress()) {
+      setStep('payment');
+    }
+  }}
+>
+  Continue to Payment →
+</button>
             </div>
           ) : (
             <div className="payment-section">
@@ -206,6 +380,34 @@ const placeOrder = async () => {
           </div>
         </div>
       </div>
+      {validationPopup.show && (
+  <div className="popup-overlay">
+    <div className="validation-popup">
+
+      <div className="popup-icon">
+        ⚠️
+      </div>
+
+      <h3>Validation Error</h3>
+
+      <p>
+        {validationPopup.message}
+      </p>
+
+      <button
+        onClick={() =>
+          setValidationPopup({
+            show:false,
+            message:''
+          })
+        }
+      >
+        OK
+      </button>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };

@@ -145,6 +145,106 @@ const styles = `
   .price-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
   .current-price { color: #d4af37; font-weight: 700; font-size: 1.3rem; }
   .old-price { text-decoration: line-through; color: #bbb; font-size: 0.95rem; }
+  .cart-popup {
+  background:white;
+  width:350px;
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  animation:popupShow .3s ease;
+}
+
+
+.cart-success-overlay{
+
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+
+  background:rgba(6,59,42,0.35);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  z-index:99999;
+
+}
+
+
+.cart-success-box{
+
+  width:360px;
+
+  background:#ffffff;
+
+  padding:35px;
+
+  border-radius:25px;
+
+  text-align:center;
+
+  box-shadow:
+  0 15px 40px rgba(0,0,0,0.25);
+
+  animation:cartPopup .3s ease;
+
+}
+
+
+.cart-success-icon{
+
+ font-size:55px;
+
+ margin-bottom:15px;
+
+}
+
+
+.cart-success-box h3{
+
+ color:#063b2a;
+
+ font-size:22px;
+
+ margin-bottom:10px;
+
+}
+
+
+.cart-success-box p{
+
+ color:#666;
+
+ font-size:15px;
+
+}
+
+
+@keyframes cartPopup{
+
+ from{
+
+ transform:scale(.7);
+
+ opacity:0;
+
+ }
+
+
+ to{
+
+ transform:scale(1);
+
+ opacity:1;
+
+ }
+
+}
+
   /* Mobile Responsive */
   @media (max-width: 768px) {
     .btn-filters-toggle { display: block; }
@@ -161,6 +261,32 @@ const styles = `
     .sidebar-overlay.visible { display: block; }
     .product-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
     .image-container { height: 260px; }
+    .cart-popup-overlay {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.35);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+
+
+
+@keyframes popupShow {
+  from {
+    transform:scale(.8);
+    opacity:0;
+  }
+  to {
+    transform:scale(1);
+    opacity:1;
+  }
+}
     .hover-actions { display: none; } /* Hide hover actions on mobile for better UX */
   }
 `;
@@ -180,6 +306,28 @@ export default function ShopPage() {
   const [sortOption, setSortOption] = useState("Featured");
 const [products, setProducts] = useState([]);
 const [loading, setLoading] = useState(true);
+const [cartPopup, setCartPopup] = useState({
+  show: false,
+  message: ''
+});
+const showCartPopup = (message) => {
+
+  setCartPopup({
+    show:true,
+    message
+  });
+
+
+  setTimeout(() => {
+
+    setCartPopup({
+      show:false,
+      message:""
+    });
+
+  },2000);
+
+};
 const navigate = useNavigate();
 
 
@@ -252,36 +400,75 @@ const roundedRating = Math.round(avgRating * 10) / 10; // e.g., 4.3
 
 // Inside your ShopPage component, above the return:
 const handleAddToCart = async (product) => {
+
   const storedUser = localStorage.getItem("user");
-  if (!storedUser) {
-    alert("Please login to add products to cart.");
-    navigate("/login");
+
+
+  if(!storedUser){
+
+    showCartPopup(
+      "Please login to add products to your bag"
+    );
+
+    setTimeout(()=>{
+      navigate("/login");
+    },1500);
+
     return;
+
   }
 
-  const user = JSON.parse(storedUser);   // parse stored object
-  const userId = user.id;                // extract the numeric id
 
-  try {
-    const response = await fetch("https://vanyabackenddatabase-vahr.onrender.com/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,       // backend expects snake_case
-        product_id: product.id,
-        quantity: 1,
-      }),
-    });
+  const user = JSON.parse(storedUser);
 
-    if (response.ok) {
-      alert(`${product.name} added to cart!`);
-    } else {
-      alert("Failed to add to cart. Try again.");
+
+  try{
+
+    const response = await fetch(
+      "https://vanyabackenddatabase-vahr.onrender.com/cart/add",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+
+          user_id:user.id,
+          product_id:product.id,
+          quantity:1
+
+        })
+      }
+    );
+
+
+    if(response.ok){
+
+      showCartPopup(
+        `${product.name} added to your bag`
+      );
+
     }
-  } catch (error) {
-    console.error("Add to cart error:", error);
-    alert("Something went wrong.");
+    else{
+
+      showCartPopup(
+        "Unable to add item"
+      );
+
+    }
+
+
   }
+  catch(error){
+
+    console.log(error);
+
+    showCartPopup(
+      "Something went wrong"
+    );
+
+  }
+
 };
   return (
     <>
@@ -405,10 +592,40 @@ const handleAddToCart = async (product) => {
             <span className="old-price">₹{product.oldPrice.toLocaleString()}</span>
           </div>
         </div>
+      
       </div>
     ))
   )}
 </main>
+ {cartPopup.show && (
+
+<div className="cart-success-overlay">
+
+
+ <div className="cart-success-box">
+
+
+   <div className="cart-success-icon">
+      🛒
+   </div>
+
+
+   <h3>
+      Cart Updated
+   </h3>
+
+
+   <p>
+      {cartPopup.message}
+   </p>
+
+
+ </div>
+
+
+</div>
+
+)}
       </div>
     </>
   );

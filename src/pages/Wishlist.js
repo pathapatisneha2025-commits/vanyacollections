@@ -77,7 +77,7 @@ const Wishlist = () => {
 
       const res = await fetch(
 
-        `https://vanyabackenddatabase-vahr.onrender.com/review/wishlist/${id}`,
+        `https://vanyabackenddatabase-vahr.onrender.com/review/wishlist/delete/${id}`,
 
         {
           method:"DELETE"
@@ -706,7 +706,7 @@ item.old_price &&
 
 <Link
 
-to={`/product/${item.product_id}`}
+to={`/product/${item.id}`}
 
 className="view-btn"
 

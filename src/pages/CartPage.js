@@ -14,21 +14,32 @@ const CartPage = ({ isOpen, onClose }) => {
   const userId = storedUser ? JSON.parse(storedUser).id : null;
 
   // Fetch cart items
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (!userId) return;
-      try {
-        const res = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/cart/${userId}`);
-        const data = await res.json();
-        setCartItems(Array.isArray(data.items) ? data.items : []);
-      } catch (err) {
-        console.error(err);
-        setCartItems([]);
-      }
-    };
+ useEffect(() => {
+  const fetchCart = async () => {
+    if (!userId) return;
 
-    if (isOpen) fetchCart();
-  }, [isOpen, userId]);
+    try {
+      const res = await fetch(
+        `https://vanyabackenddatabase-vahr.onrender.com/cart/${userId}`
+      );
+
+      const data = await res.json();
+
+      console.log("CART API RESPONSE", data.items);
+
+      setCartItems(
+        Array.isArray(data.items) ? data.items : []
+      );
+
+    } catch (err) {
+      console.error(err);
+      setCartItems([]);
+    }
+  };
+
+  if (isOpen) fetchCart();
+
+}, [isOpen, userId]);
 
   // Fetch available coupons
   useEffect(() => {
@@ -82,35 +93,86 @@ const CartPage = ({ isOpen, onClose }) => {
 
   // Apply coupon
 const handleApplyCoupon = () => {
-  const coupon = coupons.find(c => c.code.toLowerCase() === couponInput.toLowerCase());
+
+  const coupon = coupons.find(
+    c => c.code.trim().toLowerCase() === couponInput.trim().toLowerCase()
+  );
+
+
   if (!coupon) {
     alert("Invalid coupon code");
     return;
   }
 
-  // Filter cart items that match coupon
+
   const eligibleItems = cartItems.filter(item => {
-    if (coupon.apply_type === "category") return item.category === coupon.category_name;
-    if (coupon.apply_type === "product") return item.id === coupon.product_id;
-    return true; // fallback: apply to all
+
+    if (coupon.apply_type === "category") {
+
+      return (
+        item.category?.trim().toLowerCase() === 
+        coupon.category_name?.trim().toLowerCase()
+      );
+
+    }
+
+
+    if (coupon.apply_type === "product") {
+
+      return Number(item.product_id) === Number(coupon.product_id);
+
+    }
+
+
+    // cart coupon
+    return true;
+
   });
 
+
+
+  console.log("Coupon:", coupon);
+  console.log("Cart Items:", cartItems);
+  console.log("Eligible Items:", eligibleItems);
+
+
+
   if (eligibleItems.length === 0) {
-    alert(`This coupon does not apply to any items in your cart`);
+
+    alert("This coupon does not apply to any items in your cart");
     return;
+
   }
 
-  const eligibleSubtotal = eligibleItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  if (eligibleSubtotal < parseFloat(coupon.min_amount)) {
-    alert(`This coupon requires a minimum of ₹${coupon.min_amount} in eligible items`);
+
+  const eligibleSubtotal = eligibleItems.reduce(
+    (sum,item)=> sum + (item.price * item.quantity),
+    0
+  );
+
+
+
+  if(eligibleSubtotal < Number(coupon.min_amount)){
+
+    alert(
+      `Minimum purchase ₹${coupon.min_amount} required`
+    );
+
     return;
+
   }
+
+
 
   setAppliedCoupon(coupon);
-  alert(`Coupon "${coupon.code}" applied!`);
-};
 
+
+  alert(
+    `Coupon ${coupon.code} applied successfully`
+  );
+
+};
   // Subtotal and discounted total
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discountedTotal = appliedCoupon
