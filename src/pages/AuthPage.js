@@ -54,10 +54,11 @@ const AuthPage = () => {
         localStorage.setItem('user', JSON.stringify(data.user));
 
         // Clear form
-        setFormData({ full_name: '', email: '', password: '', confirmPassword: '' });
+        setFormData({ fullName: '', email: '', password: '', confirmPassword: '' });
 
-// Redirect to home with state
-navigate('/', { state: { user: data.user } });      }
+        // Redirect to home with state
+        navigate('/', { state: { user: data.user } });
+      }
     } catch (err) {
       setError('Server error. Try again later.');
       console.error(err);
@@ -66,22 +67,37 @@ navigate('/', { state: { user: data.user } });      }
 
   return (
     <div style={styles.pageWrapper}>
+      <style>{hoverEffects}</style>
       <main style={styles.mainContainer}>
-        <h1 style={styles.title}>Join Vanya</h1>
-        <p style={styles.subtitle}>Create your account today</p>
+        <h1 style={styles.title}>Vanya Collections</h1>
+        <p style={styles.subtitle}>
+          {isSignUp ? "Begin your royal journey with us" : "Access your account"}
+        </p>
 
         <div style={styles.formCard}>
           {/* Tab Switcher */}
           <div style={styles.tabContainer}>
             <button
-              onClick={() => setIsSignUp(false)}
-              style={{ ...styles.tabBtn, color: !isSignUp ? '#D4AF37' : '#888' }}
+              type="button"
+              onClick={() => { setIsSignUp(false); setError(''); setSuccess(''); }}
+              style={{
+                ...styles.tabBtn,
+                background: !isSignUp ? '#D4AF37' : 'transparent',
+                color: !isSignUp ? '#513262' : '#D4AF37',
+                boxShadow: !isSignUp ? '0 4px 12px rgba(212, 175, 55, 0.3)' : 'none'
+              }}
             >
               Sign In
             </button>
             <button
-              onClick={() => setIsSignUp(true)}
-              style={{ ...styles.tabBtn, ...(!isSignUp ? {} : styles.activeTab) }}
+              type="button"
+              onClick={() => { setIsSignUp(true); setError(''); setSuccess(''); }}
+              style={{
+                ...styles.tabBtn,
+                background: isSignUp ? '#D4AF37' : 'transparent',
+                color: isSignUp ? '#513262' : '#D4AF37',
+                boxShadow: isSignUp ? '0 4px 12px rgba(212, 175, 55, 0.3)' : 'none'
+              }}
             >
               Sign Up
             </button>
@@ -106,30 +122,30 @@ navigate('/', { state: { user: data.user } });      }
 
             <div style={styles.inputGroup}>
               <span style={styles.icon}>✉️</span>
-             <input
-  type="email"
-  name="email"
-  autoComplete="off"
-  placeholder="Email Address"
-  style={styles.input}
-  value={formData.email}
-  onChange={handleChange}
-  required
-/>
+              <input
+                type="email"
+                name="email"
+                autoComplete="off"
+                placeholder="Email Address"
+                style={styles.input}
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div style={styles.inputGroup}>
               <span style={styles.icon}>🔒</span>
-             <input
-  type="password"
-  name="password"
-  autoComplete="new-password"
-  placeholder="Password"
-  style={styles.input}
-  value={formData.password}
-  onChange={handleChange}
-  required
-/>
+              <input
+                type="password"
+                name="password"
+                autoComplete="new-password"
+                placeholder="Password"
+                style={styles.input}
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             {isSignUp && (
@@ -147,146 +163,153 @@ navigate('/', { state: { user: data.user } });      }
               </div>
             )}
 
-            {error && <p style={{ color: 'red', fontSize: '13px' }}>{error}</p>}
-            {success && <p style={{ color: 'green', fontSize: '13px' }}>{success}</p>}
+            {error && <p style={styles.errorText}>{error}</p>}
+            {success && <p style={styles.successText}>{success}</p>}
 
-            <button type="submit" style={styles.submitBtn}>
-              {isSignUp ? 'Create Account' : 'Login'}
+            <button type="submit" style={styles.submitBtn} className="submit-btn-hover">
+              {isSignUp ? 'Create Royal Account' : 'Sign In'}
             </button>
           </form>
 
-          <div style={styles.divider}>or continue with</div>
+          <div style={styles.divider}>Experience timeless heritage & luxury</div>
         </div>
       </main>
     </div>
   );
 };
 
-
-
-// Simple CSS-in-JS object
+// ================= CSS-in-JS =================
 const styles = {
   pageWrapper: {
     minHeight: '100vh',
-    background: 'radial-gradient(circle at center, #1a3c2f 0%, #0d1f18 100%)',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    color: '#fff',
+    background: 'radial-gradient(circle at center, #633c78 0%, #513262 100%)',
+    fontFamily: '"Playfair Display", serif, sans-serif',
+    color: '#ffffff',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  },
-  navbar: {
-    width: '100%',
-    padding: '20px 50px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#D4AF37', // Gold color
-    lineHeight: '1',
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '30px',
-    fontSize: '14px',
-    letterSpacing: '1px',
-    cursor: 'pointer',
+    justifyContent: 'center',
+    padding: '40px 20px',
   },
   mainContainer: {
-    marginTop: '40px',
     textAlign: 'center',
     width: '100%',
-    maxWidth: '450px',
+    maxWidth: '460px',
   },
   title: {
-    fontSize: '32px',
-    marginBottom: '5px',
+    fontSize: '38px',
+    marginBottom: '6px',
     color: '#D4AF37',
+    fontWeight: '750',
+    letterSpacing: '1px',
   },
   subtitle: {
-    fontSize: '14px',
-    color: '#aaa',
+    fontSize: '15px',
+    color: '#f3e5ab',
     marginBottom: '30px',
+    letterSpacing: '0.5px',
   },
   formCard: {
-    background: 'rgba(255, 255, 255, 0.03)',
-    backdropFilter: 'blur(10px)',
-    padding: '40px',
+    background: 'rgba(81, 50, 98, 0.75)',
+    backdropFilter: 'blur(12px)',
+    padding: '40px 35px',
     borderRadius: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 15px 35px rgba(0,0,0,0.5)',
+    border: '1px solid rgba(212, 175, 55, 0.3)',
+    boxShadow: '0 15px 40px rgba(45, 25, 55, 0.6)',
+    textAlign: 'left',
   },
   tabContainer: {
     display: 'flex',
-    background: 'rgba(0,0,0,0.2)',
+    background: 'rgba(50, 30, 62, 0.6)',
     borderRadius: '30px',
     marginBottom: '30px',
     padding: '5px',
+    border: '1px solid rgba(212, 175, 55, 0.2)',
   },
   tabBtn: {
     flex: 1,
     padding: '12px',
     border: 'none',
-    background: 'none',
-    color: '#fff',
     cursor: 'pointer',
     fontSize: '14px',
-    fontWeight: '600',
-    transition: '0.3s',
+    fontWeight: '700',
+    transition: 'all 0.3s ease',
     borderRadius: '25px',
-  },
-  activeTab: {
-    background: '#f2b94a',
-    color: '#1a3c2f',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '18px',
   },
   inputGroup: {
     display: 'flex',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(212, 175, 55, 0.3)',
+    background: 'rgba(65, 38, 80, 0.6)',
+    border: '1px solid rgba(212, 175, 55, 0.35)',
     borderRadius: '30px',
     padding: '0 20px',
+    transition: 'all 0.3s ease',
   },
   input: {
     flex: 1,
     background: 'none',
     border: 'none',
     padding: '15px 10px',
-    color: '#fff',
+    color: '#ffffff',
     outline: 'none',
     fontSize: '14px',
+    fontFamily: '"Playfair Display", serif, sans-serif',
   },
   icon: {
-    opacity: 0.6,
-    fontSize: '14px',
+    opacity: 0.8,
+    fontSize: '15px',
+  },
+  errorText: {
+    color: '#ff8a8a',
+    fontSize: '13px',
+    margin: '0',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  successText: {
+    color: '#a3e4d7',
+    fontSize: '13px',
+    margin: '0',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   submitBtn: {
-    background: '#f2b94a',
-    color: '#1a3c2f',
-    padding: '15px',
+    background: 'linear-gradient(135deg, #D4AF37 0%, #aa8c2c 100%)',
+    color: '#513262',
+    padding: '16px',
     borderRadius: '30px',
     border: 'none',
-    fontWeight: 'bold',
+    fontWeight: '800',
     fontSize: '16px',
     cursor: 'pointer',
     marginTop: '10px',
-    boxShadow: '0 4px 15px rgba(242, 185, 74, 0.3)',
+    boxShadow: '0 6px 20px rgba(212, 175, 55, 0.35)',
+    transition: 'all 0.3s ease',
+    width: '100%',
+    fontFamily: '"Playfair Display", serif, sans-serif',
   },
   divider: {
     marginTop: '25px',
     fontSize: '12px',
-    color: '#666',
-    position: 'relative',
+    color: '#f3e5ab',
+    textAlign: 'center',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    fontWeight: '600',
   }
 };
+
+const hoverEffects = `
+  .submit-btn-hover:hover {
+    background: linear-gradient(135deg, #e2be42, #b89832);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+  }
+`;
 
 export default AuthPage;

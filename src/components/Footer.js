@@ -7,8 +7,9 @@ const Footer = () => {
     <footer className="vanya-footer">
       {/* Newsletter Section */}
       <div className="newsletter-section">
-        <p className="newsletter-tagline">JOIN OUR ROYAL CIRCLE</p>
+        <p className="newsletter-tagline">✦ JOIN OUR ROYAL CIRCLE ✦</p>
         <h2 className="newsletter-title">Subscribe & Save</h2>
+        <div className="title-underline"></div>
         <p className="newsletter-desc">
           Be the first to know about new collections, exclusive offers, and styling tips.
         </p>
@@ -31,134 +32,315 @@ const Footer = () => {
               Each piece is a testament to timeless elegance and exquisite craftsmanship.
             </p>
             <div className="contact-info">
-              <div className="contact-item"><Phone size={16} /> +91 9398728628</div>
-              <div className="contact-item"><Mail size={16} /> hello@vanyacollections.com</div>
+              <div className="contact-item"><Phone size={16} className="contact-icon" /> +91 9398728628</div>
+              <div className="contact-item"><Mail size={16} className="contact-icon" /> hello@vanyacollections.com</div>
               <div className="contact-item">
                 <MapPin size={16} className="pin-icon" /> 
-                <span>Door No. 1-01, Thadithota
-Dhanalakshmi Complex, Upstair
-16 MC Division Village, Mahathma Gandhi
-Rajahmundry, Andhra Pradesh
-India - 533101</span>
+                <span>Door No. 1-01, Thadithota, Dhanalakshmi Complex, Upstair, 16 MC Division Village, Mahathma Gandhi, Rajahmundry, Andhra Pradesh, India - 533101</span>
               </div>
             </div>
             <div className="social-links">
-              <div className="social-icon"><Instagram size={18} /></div>
-              <div className="social-icon"><Facebook size={18} /></div>
-              <div className="social-icon"><Twitter size={18} /></div>
-              <div className="social-icon"><Youtube size={18} /></div>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram"><Instagram size={18} /></a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook"><Facebook size={18} /></a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Twitter"><Twitter size={18} /></a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="YouTube"><Youtube size={18} /></a>
             </div>
           </div>
 
           {/* Links Columns */}
-       <div className="footer-col">
-  <h3>Shop</h3>
-  <ul>
-    <li><Link to="/collection">Silk Sarees</Link></li>
-    <li><Link to="/collection">Cotton Sarees</Link></li>
-    <li><Link to="/collection">Designer Sarees</Link></li>
-    <li><Link to="/collection">Wedding Collection</Link></li>
-    <li><Link to="/collection">Party Wear</Link></li>
-    <li><Link to="/collection">New Arrivals</Link></li>
-  </ul>
-</div>
-
-         <div className="footer-col">
-  <h3>Help & Info</h3>
-  <ul>
-    <li><Link to="/about">About Us</Link></li>
-    <li><Link to="/contact">Contact Us</Link></li>
-    <li><Link to="/shipping-policy">Shipping Policy</Link></li>
-    <li><Link to="/return-policy">Return Policy</Link></li>
-    <li><Link to="/size-guide">Size Guide</Link></li>
-    <li><Link to="/faq">FAQ</Link></li>
-  </ul>
-</div>
           <div className="footer-col">
-  <h3>My Account</h3>
-  <ul>
-    <li><Link to="/ProfilePage">My Account</Link></li>
-    <li><Link to="/orders">My Orders</Link></li>
-    <li><Link to="/wishlist">Wishlist</Link></li>
-    <li><Link to="/orders">Track Order</Link></li>
-  </ul>
-</div>
+            <h3>Shop</h3>
+            <ul>
+              <li><Link to="/collection">Silk Sarees</Link></li>
+              <li><Link to="/collection">Cotton Sarees</Link></li>
+              <li><Link to="/collection">Designer Sarees</Link></li>
+              <li><Link to="/collection">Wedding Collection</Link></li>
+              <li><Link to="/collection">Party Wear</Link></li>
+              <li><Link to="/collection">New Arrivals</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h3>Help & Info</h3>
+            <ul>
+              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
+              <li><Link to="/shipping-policy">Shipping Policy</Link></li>
+              <li><Link to="/return-policy">Return Policy</Link></li>
+              <li><Link to="/size-guide">Size Guide</Link></li>
+              <li><Link to="/faq">FAQ</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h3>My Account</h3>
+            <ul>
+              <li><Link to="/ProfilePage">My Account</Link></li>
+              <li><Link to="/orders">My Orders</Link></li>
+              <li><Link to="/wishlist">Wishlist</Link></li>
+              <li><Link to="/orders">Track Order</Link></li>
+            </ul>
+          </div>
         </div>
       </div>
 
-     <style>{`
-  /* Footer Base */
-  .vanya-footer {
-    background-color: #0d2e1f;
-    background-image: radial-gradient(#16402d 1px, transparent 1px);
-    background-size: 30px 30px;
-    color: #c4a46a;
-    padding: 80px 5% 40px;
-    font-family: 'serif';
-  }
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
-  /* Newsletter Section */
-  .newsletter-section { text-align: center; max-width: 600px; margin: 0 auto 80px; }
-  .newsletter-tagline { font-size: 12px; letter-spacing: 3px; font-weight: bold; margin-bottom: 10px; }
-  .newsletter-title { color: #fdfaf5; font-size: 42px; font-family: 'Playfair Display', serif; margin-bottom: 20px; }
-  .newsletter-desc { color: #a18a5e; font-size: 15px; margin-bottom: 30px; line-height: 1.6; }
-  .newsletter-form { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px; border: 1px solid rgba(196, 164, 106, 0.3); }
-  .newsletter-input { background: transparent; border: none; padding: 12px 25px; flex: 1; color: #fdfaf5; outline: none; }
-  .newsletter-input::placeholder { color: #6e7a6e; }
-  .subscribe-btn { background: #d4af37; color: #0d2e1f; padding: 12px 35px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-  .subscribe-btn:hover { background: #fdfaf5; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        /* Footer Base */
+        .vanya-footer {
+          background: linear-gradient(135deg, #5f0672 0%, #340d3c 100%);
+          color: #fdf8f2;
+          padding: 90px 5% 40px;
+          font-family: 'Montserrat', sans-serif;
+          position: relative;
+          overflow: hidden;
+        }
 
-  /* Divider */
-  .footer-divider { height: 1px; background: rgba(196, 164, 106, 0.15); margin-bottom: 60px; }
+        /* Newsletter Section */
+        .newsletter-section { 
+          text-align: center; 
+          max-width: 650px; 
+          margin: 0 auto 70px; 
+        }
+        .newsletter-tagline { 
+          font-size: 12px; 
+          letter-spacing: 4px; 
+          font-weight: 600; 
+          margin-bottom: 10px; 
+          color: #d4af37;
+        }
+        .newsletter-title { 
+          color: #fdf8f2; 
+          font-size: clamp(2.2rem, 3.8vw, 3.2rem); 
+          font-family: 'Playfair Display', serif; 
+          margin-bottom: 15px; 
+          font-weight: 600;
+        }
+        .title-underline {
+          width: 70px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #d4af37, transparent);
+          margin: 0 auto 20px auto;
+        }
+        .newsletter-desc { 
+          color: rgba(253, 248, 242, 0.75); 
+          font-size: 15px; 
+          margin-bottom: 30px; 
+          line-height: 1.6; 
+        }
+        .newsletter-form { 
+          display: flex; 
+          gap: 10px; 
+          background: rgba(255, 255, 255, 0.03); 
+          padding: 6px; 
+          border-radius: 50px; 
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          box-shadow: 0 10px 30px rgba(45, 18, 51, 0.2);
+        }
+        .newsletter-input { 
+          background: transparent; 
+          border: none; 
+          padding: 12px 25px; 
+          flex: 1; 
+          color: #fdf8f2; 
+          outline: none; 
+          font-family: 'Montserrat', sans-serif;
+          font-size: 14px;
+        }
+        .newsletter-input::placeholder { 
+          color: rgba(253, 248, 242, 0.4); 
+        }
+        .subscribe-btn { 
+          background: #d4af37; 
+          color: #35153c; 
+          padding: 12px 35px; 
+          border-radius: 50px; 
+          border: none; 
+          font-weight: 600; 
+          cursor: pointer; 
+          transition: all 0.3s ease;
+          font-family: 'Montserrat', sans-serif;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .subscribe-btn:hover { 
+          background: #f3c653; 
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); 
+        }
 
-  /* Grid Layout */
-  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1300px; margin: 0 auto; }
-  .footer-col h3 { color: #d4af37; font-size: 20px; margin-bottom: 25px; font-family: 'Playfair Display', serif; }
-  .footer-col ul { list-style: none; padding: 0; }
-  .footer-col ul li { margin-bottom: 12px; font-size: 14px; opacity: 0.8; transition: 0.3s; }
+        /* Divider */
+        .footer-divider { 
+          height: 1px; 
+          background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent); 
+          margin-bottom: 60px; 
+        }
 
-  /* Links Styling */
-  .footer-col ul li a {
-    color: #c4a46a;        /* Gold text */
-    text-decoration: none; /* Remove underline */
-    transition: color 0.3s ease;
-  }
-  .footer-col ul li a:hover {
-    color: #fdfaf5;        /* Lighter gold / off-white on hover */
-  }
+        /* Grid Layout */
+        .footer-container {
+          max-width: 1300px;
+          margin: 0 auto;
+        }
+        .footer-grid { 
+          display: grid; 
+          grid-template-columns: 2fr 1fr 1fr 1fr; 
+          gap: 40px; 
+        }
+        .footer-col h3 { 
+          color: #d4af37; 
+          font-size: 19px; 
+          margin-bottom: 25px; 
+          font-family: 'Playfair Display', serif; 
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        }
+        .footer-col ul { 
+          list-style: none; 
+          padding: 0; 
+          margin: 0;
+        }
+        .footer-col ul li { 
+          margin-bottom: 12px; 
+          font-size: 14px; 
+          transition: transform 0.3s ease, opacity 0.3s ease; 
+        }
 
-  /* List hover effect */
-  .footer-col ul li:hover { transform: translateX(5px); opacity: 1; }
+        /* Links Styling */
+        .footer-col ul li a {
+          color: rgba(253, 248, 242, 0.75);        
+          text-decoration: none; 
+          transition: color 0.3s ease;
+        }
+        .footer-col ul li a:hover {
+          color: #d4af37;        
+        }
 
-  /* Brand Logo */
-  .brand-col .footer-logo {
-    height: 80px; width: auto; margin-bottom: 20px; display: block;
-    mix-blend-mode: screen;
-    filter: brightness(1.2) contrast(1.3);
-    transform: scale(1.15); transform-origin: left center;
-    image-rendering: -webkit-optimize-contrast;
-  }
-  .brand-col { display: flex; flex-direction: column; align-items: flex-start; padding-top: 10px; }
+        /* List hover effect */
+        .footer-col ul li:hover { 
+          transform: translateX(5px); 
+        }
+        .footer-col ul li:hover a {
+          opacity: 1; 
+        }
 
-  .brand-story { font-size: 14px; line-height: 1.8; margin-bottom: 25px; color: #a18a5e; }
+        /* Brand Logo */
+        .brand-col .footer-logo {
+          height: 75px; 
+          width: auto; 
+          margin-bottom: 20px; 
+          display: block;
+          mix-blend-mode: screen;
+          filter: brightness(1.2) contrast(1.3);
+          transform: scale(1.1); 
+          transform-origin: left center;
+        }
+        .brand-col { 
+          display: flex; 
+          flex-direction: column; 
+          align-items: flex-start; 
+        }
 
-  /* Contact & Social */
-  .contact-info { margin-bottom: 25px; }
-  .contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
-  .pin-icon { margin-top: 3px; }
-  .social-links { display: flex; gap: 15px; }
-  .social-icon { border: 1px solid #c4a46a; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-  .social-icon:hover { background: #c4a46a; color: #0d2e1f; }
+        .brand-story { 
+          font-size: 14px; 
+          line-height: 1.8; 
+          margin-bottom: 25px; 
+          color: rgba(253, 248, 242, 0.75); 
+        }
 
-  /* Responsive */
-  @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1.5fr 1fr; } }
-  @media (max-width: 600px) { 
-    .footer-grid { grid-template-columns: 1fr; text-align: center; }
-    .contact-item { justify-content: center; }
-    .social-links { justify-content: center; }
-    .footer-col ul li:hover { transform: none; }
-  }
-`}</style>
+        /* Contact & Social */
+        .contact-info { 
+          margin-bottom: 25px; 
+        }
+        .contact-item { 
+          display: flex; 
+          align-items: flex-start; 
+          gap: 12px; 
+          margin-bottom: 12px; 
+          font-size: 13px; 
+          color: rgba(253, 248, 242, 0.85);
+          line-height: 1.5;
+        }
+        .contact-icon {
+          color: #d4af37;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        .pin-icon { 
+          color: #d4af37;
+          flex-shrink: 0;
+          margin-top: 3px; 
+        }
+        .social-links { 
+          display: flex; 
+          gap: 12px; 
+        }
+        .social-icon { 
+          border: 1px solid rgba(212, 175, 55, 0.4); 
+          background: rgba(255, 255, 255, 0.03);
+          color: #d4af37;
+          width: 38px;
+          height: 38px; 
+          border-radius: 50%; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          cursor: pointer; 
+          transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); 
+        }
+        .social-icon:hover { 
+          background: #5c2d66; 
+          border-color: #d4af37;
+          color: #f3c653; 
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) { 
+          .footer-grid { 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 40px;
+          } 
+          .brand-col {
+            grid-column: span 2;
+          }
+        }
+        @media (max-width: 600px) { 
+          .footer-grid { 
+            grid-template-columns: 1fr; 
+            text-align: center; 
+          }
+          .brand-col {
+            grid-column: span 1;
+            align-items: center;
+          }
+          .brand-col .footer-logo {
+            transform-origin: center center;
+          }
+          .contact-item { 
+            justify-content: center; 
+            text-align: left;
+          }
+          .social-links { 
+            justify-content: center; 
+          }
+          .footer-col ul li:hover { 
+            transform: none; 
+          }
+          .newsletter-form {
+            flex-direction: column;
+            background: transparent;
+            border: none;
+            gap: 12px;
+            box-shadow: none;
+          }
+          .newsletter-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50px;
+          }
+        }
+      `}</style>
     </footer>
   );
 };

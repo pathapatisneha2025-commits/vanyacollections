@@ -10,20 +10,19 @@ const VanyaCollections = () => {
 
   return (
     <div style={styles.container}>
-   
-
       {/* Header Section */}
       <header style={styles.header}>
-        <p style={styles.subHeader}>BROWSE BY CATEGORY</p>
-        <h1 style={styles.mainTitle}>Our Collections</h1>
+        <p style={styles.subHeader}>✦ BROWSE BY CATEGORY ✦</p>
+        <h1 style={styles.mainTitle}>Our Exquisite Collections</h1>
         <div style={styles.underline}></div>
+        <p style={styles.headerDesc}>Immerse yourself in our royal handloom masterpieces tailored for elegance.</p>
       </header>
 
       {/* Grid Section */}
-      <div style={styles.grid}>
+      <div style={styles.grid} className="collections-grid">
         {collections.map((item, index) => (
-          <div key={index} style={styles.card}>
-            <img src={item.image} alt={item.alt} style={styles.image} />
+          <div key={index} style={styles.card} className="collection-card">
+            <img src={item.image} alt={item.alt} style={styles.image} className="card-image" />
             <div style={styles.cardOverlay}>
               <h3 style={styles.cardTitle}>{item.title}</h3>
               <p style={styles.cardSub}>{item.designs}</p>
@@ -32,13 +31,34 @@ const VanyaCollections = () => {
         ))}
       </div>
 
-      {/* Responsive Styles (Inline Media Query Simulation) */}
+      {/* Responsive Styles, Royal Gradients & Web Fonts */}
       <style>
         {`
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap');
+
+          .collection-card {
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+
+          .collection-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(92, 53, 102, 0.2), 0 0 25px rgba(212, 175, 55, 0.3) !important;
+            border-color: rgba(212, 175, 55, 0.6);
+          }
+
+          .collection-card:hover .card-image {
+            transform: scale(1.06);
+          }
+
+          .card-image {
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+
           @media (max-width: 768px) {
-            nav { flex-direction: column; padding: 10px; }
-            .nav-links { display: none; } /* Simplified for brevity */
-            .grid-container { grid-template-columns: 1fr !important; padding: 10px !important; }
+            .collections-grid {
+              grid-template-columns: 1fr !important;
+              padding: 0 20px 40px 20px !important;
+            }
           }
         `}
       </style>
@@ -49,68 +69,60 @@ const VanyaCollections = () => {
 const styles = {
   container: {
     fontFamily: '"Playfair Display", serif',
-    backgroundColor: '#fff',
+    // Soft, luxurious light purple and pastel lavender gradient matching brand identity
+    background: 'radial-gradient(circle at 50% 0%, #fbf5fc 0%, #f3e9f5 50%, #eadcf0 100%)',
     minHeight: '100vh',
-  },
-  navbar: {
-    backgroundColor: '#1a3a32',
-    color: '#d4af37',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '15px 50px',
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    lineHeight: '0.8',
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '20px',
-  },
-  link: {
-    color: '#fff',
-    textDecoration: 'none',
-    fontSize: '14px',
-    letterSpacing: '1px',
+    paddingBottom: '60px',
   },
   header: {
     textAlign: 'center',
-    padding: '40px 20px',
+    padding: '60px 20px 30px 20px',
   },
   subHeader: {
-    color: '#d4af37',
+    fontFamily: '"Montserrat", sans-serif',
+    color: '#bfa136', // Sophisticated deep gold accent for light background
     fontSize: '12px',
-    letterSpacing: '3px',
-    marginBottom: '10px',
+    letterSpacing: '4px',
+    marginBottom: '12px',
+    fontWeight: '600',
   },
   mainTitle: {
-    fontSize: '36px',
-    color: '#111',
+    fontSize: 'clamp(2.3rem, 4vw, 3.4rem)',
+    color: '#43204a', // Deep royal purple for high contrast text readability
     margin: '0',
+    fontWeight: '700',
   },
   underline: {
-    width: '60px',
+    width: '80px',
     height: '2px',
-    backgroundColor: '#d4af37',
-    margin: '10px auto',
+    background: 'linear-gradient(90deg, transparent, #d4af37, transparent)',
+    margin: '18px auto',
+  },
+  headerDesc: {
+    fontFamily: '"Montserrat", sans-serif',
+    color: '#715378', // Muted purple-gray secondary text
+    fontSize: '15px',
+    maxWidth: '550px',
+    margin: '0 auto',
+    letterSpacing: '0.5px',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    padding: '0 50px 50px 50px',
-    maxWidth: '1200px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '30px',
+    padding: '20px 50px 60px 50px',
+    maxWidth: '1300px',
     margin: '0 auto',
   },
   card: {
     position: 'relative',
-    borderRadius: '15px',
+    borderRadius: '18px',
     overflow: 'hidden',
-    height: '400px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+    height: '430px',
+    // Elegant soft border and refined light purple shadow
+    border: '1px solid rgba(212, 175, 55, 0.35)',
+    boxShadow: '0 12px 30px rgba(92, 53, 102, 0.12)',
+    backgroundColor: '#ffffff',
   },
   image: {
     width: '100%',
@@ -122,20 +134,26 @@ const styles = {
     bottom: '0',
     left: '0',
     right: '0',
-    padding: '20px',
-    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+    padding: '30px',
+    // Rich royal gradient fade for crisp readability over imagery
+    background: 'linear-gradient(to top, rgba(45, 18, 51, 0.95) 0%, rgba(45, 18, 51, 0.5) 65%, transparent 100%)',
     color: '#fff',
   },
   cardTitle: {
     margin: '0',
-    fontSize: '20px',
-    color: '#f3e5ab',
+    fontSize: '23px',
+    color: '#f3c653', // Luminous gold title matching logo accents
+    fontWeight: '600',
+    letterSpacing: '0.5px',
   },
   cardSub: {
-    margin: '5px 0 0',
-    fontSize: '14px',
-    opacity: '0.8',
-  }
+    fontFamily: '"Montserrat", sans-serif',
+    margin: '8px 0 0',
+    fontSize: '13px',
+    color: 'rgba(253, 248, 242, 0.85)',
+    letterSpacing: '1.2px',
+    textTransform: 'uppercase',
+  },
 };
 
 export default VanyaCollections;

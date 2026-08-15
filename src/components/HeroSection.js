@@ -21,7 +21,7 @@ const HeroSection = () => {
 
       <div style={styles.overlay}></div>
       <div style={styles.goldBlur}></div>
-      <div style={styles.greenBlur}></div>
+      <div style={styles.purpleBlur}></div>
 
       <div style={styles.content}>
         {/* Logo */}
@@ -41,15 +41,15 @@ const HeroSection = () => {
             Discover handcrafted silk and designer sarees from India's master weavers.
             Each piece tells a story of tradition, artistry, and timeless beauty.
           </p>
-         <div style={{ display: 'flex', gap: '20px' }}>
-  <Link to="/collection" style={{ textDecoration: 'none' }}>
-    <button style={styles.primaryBtn}>✦ Explore Collections</button>
-  </Link>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <Link to="/collection" style={{ textDecoration: 'none' }}>
+              <button style={styles.primaryBtn}>✦ Explore Collections</button>
+            </Link>
 
-  <Link to="/shop" style={{ textDecoration: 'none' }}>
-    <button style={styles.secondaryBtn}>Shop All Sarees →</button>
-  </Link>
-</div>
+            <Link to="/shop" style={{ textDecoration: 'none' }}>
+              <button style={styles.secondaryBtn}>Shop All Sarees →</button>
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -69,7 +69,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* NEW: Scrolling Yellow Line */}
+      {/* Scrolling Yellow Line */}
       <div style={styles.tickerBanner}>
         <div style={styles.tickerTrack}>
           {[...tickerItems, ...tickerItems].map((item, index) => (
@@ -94,7 +94,6 @@ const HeroSection = () => {
           to { opacity:1; transform:translateY(0); }
         }
 
-        /* Animation for the yellow ticker */
         @keyframes scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -115,8 +114,7 @@ const styles = {
     position: "relative",
     minHeight: "100vh",
     fontFamily: "'Playfair Display', serif",
-    backgroundImage:
-      "url('/herosection.jpg')",
+    backgroundImage: "url('/herosection.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     color: "#fff",
@@ -127,24 +125,24 @@ const styles = {
   overlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(to bottom, rgba(6,45,29,0.6), rgba(6,45,29,0.85))",
+    background: "linear-gradient(to bottom, rgba(74, 38, 93, 0.75), rgba(51, 23, 66, 0.9))", // Updated to Deep Purple gradient
     zIndex: 1,
   },
   goldBlur: {
     position: "absolute",
     width: "500px",
     height: "500px",
-    background: "rgba(212,175,55,0.25)",
+    background: "rgba(244,196,48,0.2)", // Logo matching gold/yellow
     filter: "blur(160px)",
     top: "-100px",
     right: "-100px",
     zIndex: 1,
   },
-  greenBlur: {
+  purpleBlur: {
     position: "absolute",
     width: "400px",
     height: "400px",
-    background: "rgba(0,80,50,0.4)",
+    background: "rgba(90, 40, 115, 0.5)", // Rich purple blur
     filter: "blur(140px)",
     bottom: "-100px",
     left: "-100px",
@@ -155,8 +153,8 @@ const styles = {
     padding: "12px 0",
     fontSize: "11px",
     letterSpacing: "3px",
-    background: "#041f14",
-    color: "#d4af37",
+    background: "#2a1236", // Deep royal purple shade
+    color: "#f4c430", // Logo gold
     zIndex: 3,
     position: "relative",
   },
@@ -167,18 +165,17 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    flex: 1, // Let content take remaining space
+    flex: 1,
   },
   logoContainer: { paddingTop: "40px" },
   logoMain: {
     fontSize: "30px",
     letterSpacing: "6px",
     fontWeight: "700",
-    background: "linear-gradient(90deg,#d4af37,#f5e6a8,#d4af37)",
+    background: "linear-gradient(90deg,#f4c430,#ffe885,#f4c430)", // Bright gold logo gradient
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
-  logoSub: { fontSize: "12px", letterSpacing: "3px", opacity: 0.8 },
   heroText: {
     maxWidth: "850px",
     animation: "fadeUp 1.2s ease forwards",
@@ -187,7 +184,7 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: "14px",
     letterSpacing: "8px",
-    color: "#d4af37",
+    color: "#f4c430",
     marginBottom: "25px",
     fontWeight: "500",
   },
@@ -195,7 +192,7 @@ const styles = {
     fontSize: "clamp(3rem, 8vw, 6.5rem)",
     lineHeight: "1.05",
     fontWeight: "400",
-    color: "#e6c266",
+    color: "#fceea7", // Soft warm gold
     marginBottom: "30px",
   },
   description: {
@@ -206,23 +203,23 @@ const styles = {
     color: "rgba(255,255,255,0.85)",
     marginBottom: "45px",
   },
-  buttonGroup: { display: "flex", gap: "20px", flexWrap: "wrap" },
   primaryBtn: {
     padding: "18px 40px",
     borderRadius: "40px",
     border: "none",
     fontWeight: "600",
     cursor: "pointer",
-    background: "linear-gradient(90deg,#d4af37,#f5e6a8,#d4af37)",
+    background: "linear-gradient(90deg,#f4c430,#ffe885,#f4c430)",
+    color: "#2a1236", // Deep purple text for contrast on gold button
     backgroundSize: "200% auto",
     animation: "shimmer 4s linear infinite",
   },
   secondaryBtn: {
     padding: "18px 40px",
     borderRadius: "40px",
-    border: "1px solid rgba(255,255,255,0.6)",
+    border: "1px solid rgba(244,196,48,0.6)",
     background: "transparent",
-    color: "#fff",
+    color: "#fceea7",
     cursor: "pointer",
   },
   stats: {
@@ -232,11 +229,10 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     zIndex: 2,
   },
-  // STYLES FOR THE NEW YELLOW TICKER
   tickerBanner: {
     position: "relative",
     zIndex: 10,
-    background: "#d4af37", // The solid yellow/gold color
+    background: "#f4c430", // Solid logo gold ticker
     padding: "15px 0",
     width: "100%",
     overflow: "hidden",
@@ -251,7 +247,7 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: "13px",
     fontWeight: "700",
-    color: "#041f14", // Deep green text on yellow
+    color: "#2a1236", // Deep royal purple text matching the brand background
     letterSpacing: "2px",
     padding: "0 40px",
     whiteSpace: "nowrap",

@@ -53,20 +53,21 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
+    setIsDropdownOpen(false);
   };
 
   return (
     <div style={styles.container}>
       <nav className="navbar-layout" style={styles.navbar}>
         
-        {/* 1. Logo (Left on mobile) */}
+        {/* 1. Logo Section */}
         <div className="logo-section" style={styles.logoSection}>
-          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', height: '100%' }}>
             <img src="/vanyalogo.png" alt="Vanya Logo" style={styles.logoImage} />
           </Link>
         </div>
 
-        {/* Desktop Links (Hidden on mobile) */}
+        {/* Desktop Links */}
         <div className="nav-links-desktop" style={styles.navLinks}>
           <Link to="/" style={styles.link}>HOME</Link>
           <Link to="/shop" style={styles.link}>SHOP</Link>
@@ -75,7 +76,7 @@ const Navbar = () => {
           <Link to="/contact" style={styles.link}>CONTACT</Link>
         </div>
 
-        {/* 2. Action Icons (Center on mobile) */}
+        {/* 2. Action Icons */}
         <div className="icon-group-mobile" style={styles.iconGroup}>
           <Search size={20} style={styles.icon} />
           
@@ -84,40 +85,38 @@ const Navbar = () => {
               <button style={styles.userDropdownBtn} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                 <User size={22} style={styles.icon} />
               </button>
-             {isDropdownOpen && (
-  <div style={styles.userDropdownMenu}>
-
-    <button
-      onClick={() => {
-        navigate("/ProfilePage");
-        setIsDropdownOpen(false);
-      }}
-      style={styles.dropdownItemBtn}
-    >
-      My Profile
-    </button>
-
-    <button
-      onClick={handleLogout}
-      style={styles.dropdownItemBtn}
-    >
-      Logout
-    </button>
-
-  </div>
-)}
+              {isDropdownOpen && (
+                <div style={styles.userDropdownMenu}>
+                  <button
+                    onClick={() => {
+                      navigate("/ProfilePage");
+                      setIsDropdownOpen(false);
+                    }}
+                    style={styles.dropdownItemBtn}
+                  >
+                    My Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    style={styles.dropdownItemBtn}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
-            <Link to="/AuthPage"><User size={22} style={styles.icon} /></Link>
+            <Link to="/AuthPage" style={{ display: 'flex', alignItems: 'center' }}><User size={22} style={styles.icon} /></Link>
           )}
           
-<div
-  style={{ cursor: "pointer", position: "relative" }}
-  onClick={() => navigate("/wishlist")}
->
-  <Heart size={20} style={styles.icon} />
-</div>          
-          <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setIsCartOpen(true)}>
+          <div
+            style={{ cursor: "pointer", position: "relative", display: 'flex', alignItems: 'center' }}
+            onClick={() => navigate("/wishlist")}
+          >
+            <Heart size={20} style={styles.icon} />
+          </div>         
+          
+          <div style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setIsCartOpen(true)}>
             <ShoppingBag size={22} style={styles.icon} />
             {cartItems.length > 0 && (
               <span style={styles.badge}>{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
@@ -125,13 +124,13 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* 3. Mobile Toggle (Right on mobile) */}
+        {/* 3. Mobile / Android Hamburger Toggle */}
         <div className="mobile-toggle" style={styles.mobileToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile & Android Slide Menu Overlay */}
       {isMenuOpen && (
         <div style={styles.mobileMenu}>
           <Link to="/" style={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>HOME</Link>
@@ -154,14 +153,12 @@ const Navbar = () => {
         {`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
           
-          /* Desktop is kept as is. Mobile (992px and below) matches the screenshot */
           @media (max-width: 992px) {
             .navbar-layout {
               display: grid !important;
-              /* LOGO | ICONS | HAMBURGER */
               grid-template-columns: 1fr auto auto !important; 
-              gap: 15px;
-              padding: 0 15px !important;
+              gap: 12px;
+              padding: 0 12px !important;
               align-items: center;
               height: 60px !important;
             }
@@ -173,13 +170,14 @@ const Navbar = () => {
             }
 
             .icon-group-mobile {
-              justify-content: center !important;
-              gap: 12px !important; /* Tighter spacing for mobile icons */
+              justify-content: flex-end !important;
+              gap: 14px !important; 
             }
 
             .mobile-toggle { 
               display: flex !important; 
               justify-content: flex-end;
+              align-items: center;
             }
           }
         `}
@@ -196,67 +194,93 @@ const styles = {
     top: 0,
     zIndex: 2000,
   },
-logoImage: {
-    /* 1. Scale the height to almost fill the navbar */
-    height: '50px', 
+  logoImage: {
+    /* Adjusted to a compact, proportionate height that fits properly on both mobile and web */
+    height: '42px', 
     width: 'auto',
     display: 'block',
-    
-    /* 2. Remove the black background from the JPG */
-    /* 'screen' makes black transparent and keeps lighter colors */
-    mixBlendMode: 'screen', 
-    
-    /* 3. Fine-tuning position */
-    padding: '0',
-    margin: '0',
+    mixBlendMode: 'screen',
     objectFit: 'contain',
-    
-    /* 4. Optional: Subtle brightness boost if the logo looks too dim */
-    filter: 'brightness(1.1) contrast(1.1)',
+    filter: 'brightness(1.15) contrast(1.1)',
   },
-
   logoSection: { 
     display: 'flex', 
     alignItems: 'center', 
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     padding: '0',
-    /* Ensure the container doesn't restrict the logo height */
     height: '100%', 
-    overflow: 'visible', 
   },
-
   navbar: {
-    backgroundColor: '#063b2a', 
+    backgroundColor: '#522b5b', 
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    /* Vertical padding set to 0 to allow logo to use full height */
     padding: '0 5%', 
     height: '70px', 
-    color: '#d4af37',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)', // Optional: adds depth
+    color: '#f3c653', 
+    boxShadow: '0 4px 15px rgba(0,0,0,0.25)',
   },
-  navLinks: { display: 'flex', gap: '25px', alignItems: 'center' },
-  link: { color: '#ffffff', textDecoration: 'none', fontSize: '13px', fontWeight: '400', letterSpacing: '1px' },
-  iconGroup: { display: 'flex', gap: '18px', alignItems: 'center', color: '#d4af37' },
-  icon: { cursor: 'pointer', strokeWidth: '1.5px', color: '#d4af37' },
-  mobileToggle: { display: 'none', color: '#d4af37', cursor: 'pointer' },
-  mobileMenu: { position: 'absolute', top: '100%', left: 0, width: '100%', backgroundColor: '#063b2a', display: 'flex', flexDirection: 'column', zIndex: 999, borderTop: '1px solid #084d37' },
-  mobileNavLink: { color: 'white', padding: '15px 5%', textDecoration: 'none', borderBottom: '1px solid #084d37', fontSize: '14px' },
+  navLinks: { display: 'flex', gap: '30px', alignItems: 'center' },
+  link: { color: '#fdf8f2', textDecoration: 'none', fontSize: '13px', fontWeight: '500', letterSpacing: '1.2px', transition: 'color 0.2s' },
+  iconGroup: { display: 'flex', gap: '20px', alignItems: 'center', color: '#f3c653' },
+  icon: { cursor: 'pointer', strokeWidth: '1.5px', color: '#f3c653' },
+  mobileToggle: { display: 'none', color: '#f3c653', cursor: 'pointer' },
+  mobileMenu: { 
+    position: 'absolute', 
+    top: '100%', 
+    left: 0, 
+    width: '100%', 
+    backgroundColor: '#522b5b', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    zIndex: 999, 
+    borderTop: '1px solid #63366e',
+    boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
+  },
+  mobileNavLink: { 
+    color: '#fdf8f2', 
+    padding: '16px 6%', 
+    textDecoration: 'none', 
+    borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
+    fontSize: '14px',
+    letterSpacing: '1px',
+    fontWeight: '500'
+  },
   badge: {
     position: 'absolute',
     top: '-8px',
     right: '-8px',
-    backgroundColor: '#d4af37',
-    color: '#063b2a',
+    backgroundColor: '#f3c653',
+    color: '#522b5b',
     fontSize: '10px',
     fontWeight: 'bold',
     borderRadius: '50%',
     padding: '2px 6px',
   },
-  userDropdownBtn: { background: 'none', border: 'none', padding: 0, cursor: 'pointer' },
-  userDropdownMenu: { position: 'absolute', top: '100%', right: 0, backgroundColor: '#063b2a', border: '1px solid #084d37', borderRadius: '4px', minWidth: '100px' },
-  dropdownItemBtn: { background: 'none', border: 'none', color: '#fff', padding: '10px', cursor: 'pointer', width: '100%' }
+  userDropdownBtn: { background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' },
+  userDropdownMenu: { 
+    position: 'absolute', 
+    top: 'calc(100% + 10px)', 
+    right: 0, 
+    backgroundColor: '#522b5b', 
+    border: '1px solid #63366e', 
+    borderRadius: '6px', 
+    minWidth: '130px', 
+    boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
+    overflow: 'hidden',
+    zIndex: 1000
+  },
+  dropdownItemBtn: { 
+    background: 'none', 
+    border: 'none', 
+    color: '#fdf8f2', 
+    padding: '12px 16px', 
+    cursor: 'pointer', 
+    width: '100%', 
+    textAlign: 'left',
+    fontSize: '13px',
+    transition: 'background 0.2s'
+  }
 };
 
 export default Navbar;

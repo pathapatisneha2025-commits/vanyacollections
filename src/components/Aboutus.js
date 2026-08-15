@@ -12,7 +12,7 @@ const AboutOurStory = () => {
               alt="Vanya Heritage" 
               className="story-img"
             />
-            {/* The Floating Gold Badge */}
+            {/* The Floating Gold & Royal Badge */}
             <div className="experience-badge">
               <h3>6+</h3>
               <p>Years of Weaving Dreams</p>
@@ -22,10 +22,11 @@ const AboutOurStory = () => {
 
         {/* Right Side: Content */}
         <div className="story-content">
-          <span className="story-tagline">OUR STORY</span>
+          <span className="story-tagline">✦ OUR HERITAGE STORY ✦</span>
           <h2 className="story-title">
             Born from a Love of India's Textile Heritage
           </h2>
+          <div className="title-underline"></div>
           
           <div className="story-description">
             <p>
@@ -48,17 +49,21 @@ const AboutOurStory = () => {
 
       <style>
         {`
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
           .story-section {
             padding: 100px 5%;
-            background-color: #fdfaf5; /* Subtle off-white background from screenshot */
-            font-family: 'serif';
+            background: linear-gradient(135deg, #fbf5fc 0%, #f4ebf7 100%);
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
           }
           .story-container {
             max-width: 1300px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Image-heavy ratio as per screenshot */
-            gap: 80px;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 70px;
             align-items: center;
           }
           .story-image-wrapper {
@@ -69,82 +74,113 @@ const AboutOurStory = () => {
             position: relative;
             border-radius: 24px;
             overflow: visible;
+            box-shadow: 0 20px 40px rgba(82, 43, 91, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: transform 0.4s ease;
+          }
+          .main-image-container:hover {
+            transform: translateY(-5px);
           }
           .story-img {
             width: 100%;
-            height: 500px; /* Fixed height to match the screenshot aspect ratio */
+            height: 520px;
             object-fit: cover;
             display: block;
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+          .main-image-container:hover .story-img {
+            transform: scale(1.03);
           }
           .experience-badge {
             position: absolute;
-            bottom: 30px; /* Floating slightly above the bottom edge */
-            right: -30px;
-            background-color: #fcc419; /* Brand Gold */
+            bottom: 35px;
+            right: -35px;
+            background: linear-gradient(135deg, #522b5b 0%, #35153c 100%);
+            border: 1px solid #d4af37;
             padding: 25px;
-            border-radius: 20px;
-            width: 150px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: left;
+            border-radius: 18px;
+            width: 160px;
+            box-shadow: 0 15px 35px rgba(53, 21, 60, 0.3), 0 0 15px rgba(212, 175, 55, 0.2);
+            text-align: center;
             z-index: 10;
           }
           .experience-badge h3 {
-            font-size: 36px;
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
             margin: 0;
-            color: #1a3321;
+            color: #d4af37;
             font-weight: 700;
           }
           .experience-badge p {
-            font-size: 14px;
-            margin: 2px 0 0 0;
-            color: #1a3321;
-            font-weight: 600;
-            line-height: 1.2;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            margin: 6px 0 0 0;
+            color: #fdf8f2;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
           }
           .story-tagline {
-            color: #b8860b;
-            font-size: 11px;
+            color: #d4af37;
+            font-size: 12px;
             letter-spacing: 4px;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
           }
           .story-title {
-            font-size: 52px;
-            color: #1a3321;
-            margin: 20px 0;
-            line-height: 1.1;
-            font-weight: 500;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+            color: #522b5b;
+            margin: 0 0 15px 0;
+            line-height: 1.2;
+            font-weight: 600;
+          }
+          .title-underline {
+            width: 60px;
+            height: 2px;
+            background-color: #d4af37;
+            margin-bottom: 25px;
           }
           .story-description p {
-            color: #4a4a4a;
-            font-size: 16px;
+            color: rgba(82, 43, 91, 0.85);
+            font-size: 15px;
             line-height: 1.8;
-            margin-bottom: 25px;
-            font-family: sans-serif;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
           }
           .read-story-btn {
-            background: transparent;
-            border: 1px solid #b8860b;
-            color: #b8860b;
-            padding: 14px 32px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 700;
+            background: #522b5b;
+            border: 1px solid #d4af37;
+            color: #fdf8f2;
+            padding: 15px 34px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             margin-top: 15px;
             display: inline-flex;
             align-items: center;
             gap: 12px;
+            box-shadow: 0 4px 15px rgba(82, 43, 91, 0.15);
           }
           .read-story-btn:hover {
-            background: #b8860b;
-            color: #fff;
+            background: #6a3975;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(82, 43, 91, 0.25), 0 0 12px rgba(212, 175, 55, 0.3);
+            color: #d4af37;
           }
           .arrow {
-            font-size: 18px;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+          }
+          .read-story-btn:hover .arrow {
+            transform: translateX(4px);
           }
 
           /* Responsive Mobile Styling */
@@ -154,10 +190,7 @@ const AboutOurStory = () => {
               gap: 60px;
             }
             .story-img {
-              height: 400px;
-            }
-            .story-title {
-              font-size: 40px;
+              height: 420px;
             }
           }
           @media (max-width: 600px) {
@@ -165,18 +198,16 @@ const AboutOurStory = () => {
               padding: 60px 20px;
             }
             .story-img {
-              height: 300px;
-            }
-            .story-title {
-              font-size: 32px;
+              height: 320px;
             }
             .experience-badge {
-              right: 0px;
-              bottom: 10px;
-              padding: 15px;
-              width: 120px;
+              right: 10px;
+              bottom: 15px;
+              padding: 18px;
+              width: 130px;
             }
             .experience-badge h3 { font-size: 28px; }
+            .experience-badge p { font-size: 10px; }
           }
         `}
       </style>
