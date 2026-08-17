@@ -394,7 +394,7 @@ const CheckoutPage = () => {
 
         setTimeout(() => {
           navigate(
-            `/order-confirmation/${data.orderId}`,
+            `/orders`,
             {
               state: {
                 orderId: data.orderId,

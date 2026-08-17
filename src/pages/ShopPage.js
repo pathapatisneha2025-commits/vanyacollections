@@ -451,8 +451,25 @@ export default function ShopPage() {
           <div className="filter-section">
             <h3>Occasion</h3>
             <ul className="filter-list">
-              {['All', 'DesignerSarees', 'Wedding Collections', 'COTTON Sarees', 'SILK SAREES', 'PartyWear'].map(o => (
-                <li 
+{[
+  'All',
+  'DesignerSarees',
+  'Wedding Collections',
+  'COTTON Sarees',
+  'SILK SAREES',
+  'PartyWear',
+  'Weaving Mistake Sarees',
+  'Dress Materials',
+  'Budget Friendly Sarees',
+  'Work Sarees',
+  'Damage Sarees',
+  'Pattu Sarees',
+  'Designer Sarees',
+  'Readymade Blouses',
+  'Handloom Sarees',
+  'Exclusive Sarees'
+].map(o => (
+                  <li 
                   key={o} 
                   className={`filter-item ${activeOccasion === o ? 'active' : ''}`}
                   onClick={() => setActiveOccasion(o)}

@@ -31,7 +31,7 @@ const OrdersPage = () => {
               month: "long",
               year: "numeric",
             }),
-            status: order.status || "Processing",
+            status: order.order_status,
             total: `₹${order.total_amount}`,
             items: order.items || [],
           })
