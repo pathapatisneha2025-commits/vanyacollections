@@ -26,13 +26,14 @@ const HeroSection = () => {
       <div style={styles.content}>
         {/* Logo */}
         <div style={styles.logoContainer}>
-          <div style={styles.logoMain}>VANYA</div>
-          <div style={styles.logoSub}>Luxury Saree House</div>
+          <div style={styles.logoMain}>Vanya collections 
+</div>
+          <div style={styles.logoSub}>Budget friendly house</div>
         </div>
 
         {/* Hero Text */}
         <div style={styles.heroText}>
-          <p style={styles.topLabel}>2018 · INDIA'S FINEST</p>
+          <p style={styles.topLabel}>2023 · INDIA'S FINEST</p>
           <h1 style={styles.mainHeading}>
             Elegance Woven <br />
             in Every Thread
@@ -169,9 +170,9 @@ const styles = {
   },
   logoContainer: { paddingTop: "40px" },
   logoMain: {
-    fontSize: "30px",
+    fontSize: "20px",
     letterSpacing: "6px",
-    fontWeight: "700",
+    fontWeight: "500",
     background: "linear-gradient(90deg,#f4c430,#ffe885,#f4c430)", // Bright gold logo gradient
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
