@@ -1,499 +1,1883 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+
+const API_BASE = "https://vanyabackenddatabase-vahr.onrender.com";
 
 const ProductdetailedPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  // ============================================================
+  // STATE
+  // ============================================================
+
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState("description");
+
+  // Main gallery image
   const [mainImage, setMainImage] = useState("");
-  const navigate = useNavigate();
+
+  // Selected colour
+  const [selectedColour, setSelectedColour] = useState(null);
+
+  // Selected size for dresses
+  const [selectedSize, setSelectedSize] = useState(null);
+
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   const [reviews, setReviews] = useState([]);
+
   const [wishlisted, setWishlisted] = useState(false);
+
   const [newReview, setNewReview] = useState({
     rating: 5,
-    comment: ""
+    comment: "",
   });
 
-  // Calculate average rating and review count
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  const cleanImageUrl = (url) => {
+    if (!url || typeof url !== "string") return "";
+
+    // Ignore local browser blob images
+    if (url.startsWith("blob:")) return "";
+
+    return url.trim();
+  };
+
+  const getProductVariants = () => {
+    if (!Array.isArray(product?.variants)) return [];
+
+    return product.variants.filter(Boolean);
+  };
+
+  const isDressProduct = useMemo(() => {
+    if (!product) return false;
+
+    const category = String(product.category || "").toLowerCase();
+
+    return (
+      category.includes("dress") ||
+      category.includes("gown") ||
+      category.includes("kurti") ||
+      category.includes("salwar")
+    );
+  }, [product]);
+
+  const isSareeProduct = useMemo(() => {
+    if (!product) return false;
+
+    const category = String(product.category || "").toLowerCase();
+
+    return (
+      category.includes("saree") ||
+      category.includes("sari") ||
+      category.includes("handloom")
+    );
+  }, [product]);
+
+  // ============================================================
+  // SELECTED VARIANT
+  // ============================================================
+
+  const selectedVariant = useMemo(() => {
+    if (!product || !selectedColour) return null;
+
+    const variants = getProductVariants();
+
+    return (
+      variants.find(
+        (variant) =>
+          String(variant.colour || "").toLowerCase() ===
+          String(selectedColour || "").toLowerCase()
+      ) || null
+    );
+  }, [product, selectedColour]);
+
+  // ============================================================
+  // SELECTED SIZE
+  // ============================================================
+
+  const selectedSizeData = useMemo(() => {
+    if (!selectedVariant || !selectedSize) return null;
+
+    if (!Array.isArray(selectedVariant.sizes)) return null;
+
+    return (
+      selectedVariant.sizes.find(
+        (sizeItem) =>
+          String(sizeItem.size || "").toLowerCase() ===
+          String(selectedSize || "").toLowerCase()
+      ) || null
+    );
+  }, [selectedVariant, selectedSize]);
+
+  // ============================================================
+  // CURRENT PRICE
+  // ============================================================
+
+  const currentPrice = useMemo(() => {
+    if (!product) return 0;
+
+    // Dress + selected size
+    if (isDressProduct && selectedSizeData) {
+      return Number(selectedSizeData.price || 0);
+    }
+
+    // Colour variant
+    if (selectedVariant) {
+      return Number(selectedVariant.price || 0);
+    }
+
+    // Main product
+    return Number(product.price || 0);
+  }, [
+    product,
+    selectedVariant,
+    selectedSizeData,
+    isDressProduct,
+  ]);
+
+  // ============================================================
+  // CURRENT OLD PRICE
+  // ============================================================
+
+  const currentOldPrice = useMemo(() => {
+    if (!product) return 0;
+
+    // Dress + selected size
+    if (isDressProduct && selectedSizeData) {
+      return Number(selectedSizeData.oldPrice || 0);
+    }
+
+    // Colour variant
+    if (selectedVariant) {
+      return Number(selectedVariant.oldPrice || 0);
+    }
+
+    return Number(product.old_price || 0);
+  }, [
+    product,
+    selectedVariant,
+    selectedSizeData,
+    isDressProduct,
+  ]);
+
+  // ============================================================
+  // CURRENT DISCOUNT
+  // ============================================================
+
+  const currentDiscount = useMemo(() => {
+    if (!product) return 0;
+
+    // Dress + selected size
+    if (isDressProduct && selectedSizeData) {
+      if (selectedSizeData.discount != null) {
+        return Number(selectedSizeData.discount || 0);
+      }
+    }
+
+    // Colour variant
+    if (selectedVariant) {
+      if (selectedVariant.discount != null) {
+        return Number(selectedVariant.discount || 0);
+      }
+    }
+
+    // Main product
+    if (product.discount != null) {
+      return Number(product.discount || 0);
+    }
+
+    if (currentOldPrice && currentPrice) {
+      return Math.round(
+        ((currentOldPrice - currentPrice) / currentOldPrice) * 100
+      );
+    }
+
+    return 0;
+  }, [
+    product,
+    selectedVariant,
+    selectedSizeData,
+    isDressProduct,
+    currentOldPrice,
+    currentPrice,
+  ]);
+
+  // ============================================================
+  // CURRENT STOCK
+  // ============================================================
+
+  const currentStock = useMemo(() => {
+    if (!product) return 0;
+
+    // Dress + selected size
+    if (isDressProduct && selectedSizeData) {
+      return Number(selectedSizeData.stock || 0);
+    }
+
+    // Colour variant
+    if (selectedVariant) {
+      return Number(selectedVariant.stock || 0);
+    }
+
+    return Number(product.stock || 0);
+  }, [
+    product,
+    selectedVariant,
+    selectedSizeData,
+    isDressProduct,
+  ]);
+
+  // ============================================================
+  // TOTAL PRICE
+  // ============================================================
+
+  const totalPrice = currentPrice * quantity;
+
+  // ============================================================
+  // REVIEWS
+  // ============================================================
+
   const averageRating = reviews.length
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    ? reviews.reduce(
+        (sum, review) => sum + Number(review.rating || 0),
+        0
+      ) / reviews.length
     : 0;
 
-  const roundedRating = Math.round(averageRating * 2) / 2; 
-  const totalReviews = reviews.length;
-  const totalPrice = product ? product.price * quantity : 0;
+  const roundedRating =
+    Math.round(averageRating * 2) / 2;
 
-  // Generate star string
-  const fullStars = "★".repeat(Math.floor(roundedRating));
-  const halfStar = roundedRating % 1 === 0.5 ? "½" : ""; 
-  const emptyStars = "☆".repeat(5 - Math.ceil(roundedRating));
-  const starDisplay = fullStars + halfStar + emptyStars;
+  const totalReviews = reviews.length;
+
+  const fullStars = "★".repeat(
+    Math.floor(roundedRating)
+  );
+
+  const halfStar =
+    roundedRating % 1 === 0.5 ? "½" : "";
+
+  const emptyStars = "☆".repeat(
+    5 - Math.ceil(roundedRating)
+  );
+
+  const starDisplay =
+    fullStars + halfStar + emptyStars;
+
+  // ============================================================
+  // FETCH REVIEWS
+  // ============================================================
 
   const fetchReviews = async () => {
     try {
       const res = await fetch(
-        `https://vanyabackenddatabase-vahr.onrender.com/review/${id}`
+        `${API_BASE}/review/${id}`
       );
+
       const data = await res.json();
+
       setReviews(
         Array.isArray(data)
           ? data
-          : data.reviews || data.data || []
-      );    
+          : data.reviews ||
+              data.data ||
+              []
+      );
     } catch (err) {
-      console.error(err);
+      console.error("Review fetch error:", err);
     }
   };
+
+  // ============================================================
+  // FETCH PRODUCT
+  // ============================================================
 
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/products/all");
-        const data = await res.json();
-        
-        const selectedProduct = data.find((item) => item.id === Number(id));
-        setProduct(selectedProduct);
-        setMainImage(selectedProduct?.img_url || "");
+        setLoading(true);
 
-        if (selectedProduct) {
-          const related = data
-            .filter((item) => item.category === selectedProduct.category && item.id !== selectedProduct.id)
-            .slice(0, 4); 
-          setRelatedProducts(related);
+        const res = await fetch(
+          `${API_BASE}/products/all`
+        );
+
+        const data = await res.json();
+
+        const products = Array.isArray(data)
+          ? data
+          : data.products ||
+            data.data ||
+            [];
+
+        const selectedProduct = products.find(
+          (item) => item.id === Number(id)
+        );
+
+        if (!selectedProduct) {
+          setProduct(null);
+          return;
         }
+
+        setProduct(selectedProduct);
+
+        // IMPORTANT:
+        // Initial image is ALWAYS main product img_url
+        setMainImage(
+          cleanImageUrl(selectedProduct.img_url)
+        );
+
+        // Reset selections when opening another product
+        setSelectedColour(null);
+        setSelectedSize(null);
+        setQuantity(1);
+
+        // Related products
+        const related = products
+          .filter(
+            (item) =>
+              item.category ===
+                selectedProduct.category &&
+              item.id !== selectedProduct.id
+          )
+          .slice(0, 4);
+
+        setRelatedProducts(related);
       } catch (err) {
-        console.error(err);
+        console.error(
+          "Product fetch error:",
+          err
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchProductData();
-    fetchReviews(); 
-    window.scrollTo(0, 0); 
+    fetchReviews();
+
+    window.scrollTo(0, 0);
   }, [id]);
-    
-  const addToCart = async (productId, qty = 1) => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
-        alert('Please login to add items to cart.');
-        navigate('/login');
-        return;
-      }
 
-      const user = JSON.parse(storedUser);
-      const userId = user.id;
+  // ============================================================
+  // VARIANT IMAGES
+  // ============================================================
 
-      const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/cart/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, product_id: productId, quantity: qty }),
+  const variantImages = useMemo(() => {
+    if (!selectedVariant) return [];
+
+    const images = [];
+
+    // Variant main image first
+    const variantMain = cleanImageUrl(
+      selectedVariant.mainImage
+    );
+
+    if (variantMain) {
+      images.push(variantMain);
+    }
+
+    // Variant thumbnails
+    if (Array.isArray(selectedVariant.thumbnails)) {
+      selectedVariant.thumbnails.forEach((image) => {
+        const cleaned = cleanImageUrl(image);
+
+        if (
+          cleaned &&
+          !images.includes(cleaned)
+        ) {
+          images.push(cleaned);
+        }
       });
+    }
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add to cart");
+    return images;
+  }, [selectedVariant]);
 
-      alert(`Added ${qty} item(s) to bag! ✨`);
+  // ============================================================
+  // DEFAULT PRODUCT IMAGES
+  // ============================================================
 
-      setProduct(prev => ({
-        ...prev,
-        stock: prev.stock - qty
-      }));
+  const productImages = useMemo(() => {
+    if (!product) return [];
 
-      setQuantity(1);
-    } catch (err) {
-      console.error(err);
-      alert("Error adding to cart: " + err.message);
+    const images = [];
+
+    const main = cleanImageUrl(
+      product.img_url
+    );
+
+    if (main) {
+      images.push(main);
+    }
+
+    if (Array.isArray(product.thumbnails)) {
+      product.thumbnails.forEach((image) => {
+        const cleaned = cleanImageUrl(image);
+
+        if (
+          cleaned &&
+          !images.includes(cleaned)
+        ) {
+          images.push(cleaned);
+        }
+      });
+    }
+
+    return images;
+  }, [product]);
+
+  // ============================================================
+  // CURRENT THUMBNAILS
+  // ============================================================
+
+  const thumbnails =
+    selectedVariant && variantImages.length
+      ? variantImages
+      : productImages;
+
+  // ============================================================
+  // COLOUR SELECT
+  // ============================================================
+
+  const handleColourSelect = (colour) => {
+    const variants = getProductVariants();
+
+    const variant = variants.find(
+      (item) =>
+        String(item.colour || "").toLowerCase() ===
+        String(colour || "").toLowerCase()
+    );
+
+    if (!variant) return;
+
+    setSelectedColour(colour);
+
+    // Reset size whenever colour changes
+    setSelectedSize(null);
+
+    // Reset quantity
+    setQuantity(1);
+
+    // IMPORTANT:
+    // Clicking GREEN immediately changes main image
+    const newMainImage = cleanImageUrl(
+      variant.mainImage
+    );
+
+    if (newMainImage) {
+      setMainImage(newMainImage);
     }
   };
 
-  const addWishlist = async () => {
+  // ============================================================
+  // SIZE SELECT
+  // ============================================================
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size);
+    setQuantity(1);
+
+    // Keep currently selected colour image
+    if (
+      selectedVariant &&
+      cleanImageUrl(selectedVariant.mainImage)
+    ) {
+      setMainImage(
+        cleanImageUrl(
+          selectedVariant.mainImage
+        )
+      );
+    }
+  };
+
+  // ============================================================
+  // ADD TO CART
+  // ============================================================
+
+  const addToCart = async (
+    productId,
+    qty = 1
+  ) => {
     try {
-      const storedUser = localStorage.getItem("user");
+      const storedUser =
+        localStorage.getItem("user");
+
       if (!storedUser) {
-        alert("Please login to manage your wishlist");
+        alert(
+          "Please login to add items to cart."
+        );
         navigate("/login");
         return;
       }
 
+      // Require colour if variants exist
+      if (
+        getProductVariants().length > 0 &&
+        !selectedColour
+      ) {
+        alert(
+          "Please select a colour first."
+        );
+        return;
+      }
+
+      // Require size for dress products
+      if (
+        isDressProduct &&
+        selectedVariant?.sizes?.length > 0 &&
+        !selectedSize
+      ) {
+        alert(
+          "Please select a size first."
+        );
+        return;
+      }
+
+      if (currentStock <= 0) {
+        alert("This variant is out of stock.");
+        return;
+      }
+
+      if (qty > currentStock) {
+        alert(
+          `Only ${currentStock} item(s) available.`
+        );
+        return;
+      }
+
       const user = JSON.parse(storedUser);
+
+      const variantPayload = {
+        colour: selectedColour || null,
+        size: selectedSize || null,
+      };
+
       const res = await fetch(
-        "https://vanyabackenddatabase-vahr.onrender.com/review/wishlist/add",
-        {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body:JSON.stringify({
-            user_id: user.id,
-            product_id: product.id
-          })
-        }
-      );
-
-      const data = await res.json();
-      if(!res.ok) throw new Error(data.error);
-
-      setWishlisted(true);
-      alert("Added to wishlist ❤️");
-    } catch(err){
-      console.log(err);
-      alert("Wishlist action failed");
-    }
-  };
-
-  const handleBuyNow = async () => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      alert("Please login to proceed to checkout.");
-      navigate("/login");
-      return;
-    }
-
-    const user = JSON.parse(storedUser);
-    const userId = user.id;
-
-    try {
-      const addRes = await fetch(
-        "https://vanyabackenddatabase-vahr.onrender.com/cart/add",
+        `${API_BASE}/cart/add`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            user_id: userId,
-            product_id: product.id,
-            quantity,
+            user_id: user.id,
+            product_id: productId,
+            quantity: qty,
+
+            // Variant information
+            variant: variantPayload,
+
+            // Also send separately for easy backend handling
+            colour: selectedColour || null,
+            size: selectedSize || null,
           }),
         }
       );
 
-      const addData = await addRes.json();
-      if (!addRes.ok) throw new Error(addData.error || "Failed to add to cart");
+      const data = await res.json();
 
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      const cartRes = await fetch(`https://vanyabackenddatabase-vahr.onrender.com/cart/${userId}`);
-      if (!cartRes.ok) throw new Error("Failed to fetch cart");
-
-      const cartData = await cartRes.json();
-      const cartItems = Array.isArray(cartData)
-        ? cartData
-        : cartData.items || cartData.cart || [];
-
-      if (!cartItems.length) {
-        alert("Cart is empty. Please try again.");
-        return;
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to add to cart"
+        );
       }
 
-      const totalAmount = cartItems.reduce((acc, item) => {
-        const price = item.price ?? item.product?.price ?? 0;
-        const qty = item.quantity ?? item.qty ?? 1;
-        return acc + price * qty;
-      }, 0);
+      alert(
+        `Added ${qty} item(s) to bag! ✨`
+      );
 
-      navigate("/checkout", { state: { items: cartItems, totalAmount } });
+      setQuantity(1);
     } catch (err) {
-      console.error(err);
-      alert("Error processing your request: " + err.message);
+      console.error(
+        "Add cart error:",
+        err
+      );
+
+      alert(
+        "Error adding to cart: " +
+          err.message
+      );
     }
   };
 
-  const handleAddReview = async () => {
-    const storedUser = localStorage.getItem("user");
+  // ============================================================
+  // BUY NOW
+  // ============================================================
+
+  const handleBuyNow = async () => {
+    const storedUser =
+      localStorage.getItem("user");
+
     if (!storedUser) {
-      alert("Please login to write a review");
+      alert(
+        "Please login to proceed to checkout."
+      );
       navigate("/login");
+      return;
+    }
+
+    // Require colour
+    if (
+      getProductVariants().length > 0 &&
+      !selectedColour
+    ) {
+      alert(
+        "Please select a colour first."
+      );
+      return;
+    }
+
+    // Require size
+    if (
+      isDressProduct &&
+      selectedVariant?.sizes?.length > 0 &&
+      !selectedSize
+    ) {
+      alert(
+        "Please select a size first."
+      );
+      return;
+    }
+
+    if (currentStock <= 0) {
+      alert("This variant is out of stock.");
+      return;
+    }
+
+    if (quantity > currentStock) {
+      alert(
+        `Only ${currentStock} item(s) available.`
+      );
       return;
     }
 
     const user = JSON.parse(storedUser);
 
     try {
-      const res = await fetch(
-        "https://vanyabackenddatabase-vahr.onrender.com/review/add",
+      const addRes = await fetch(
+        `${API_BASE}/cart/add`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             user_id: user.id,
             product_id: product.id,
-            rating: newReview.rating,
-            comment: newReview.comment
-          })
+            quantity,
+
+            variant: {
+              colour:
+                selectedColour || null,
+              size:
+                selectedSize || null,
+            },
+
+            colour:
+              selectedColour || null,
+
+            size:
+              selectedSize || null,
+          }),
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const addData =
+        await addRes.json();
 
-      setReviews([data, ...reviews]); 
-      setNewReview({ rating: 5, comment: "" });
-      alert("Review submitted successfully! 🌟");
+      if (!addRes.ok) {
+        throw new Error(
+          addData.error ||
+            "Failed to add to cart"
+        );
+      }
+
+      await new Promise(
+        (resolve) =>
+          setTimeout(resolve, 300)
+      );
+
+      const cartRes = await fetch(
+        `${API_BASE}/cart/${user.id}`
+      );
+
+      if (!cartRes.ok) {
+        throw new Error(
+          "Failed to fetch cart"
+        );
+      }
+
+      const cartData =
+        await cartRes.json();
+
+      const cartItems = Array.isArray(
+        cartData
+      )
+        ? cartData
+        : cartData.items ||
+          cartData.cart ||
+          [];
+
+      if (!cartItems.length) {
+        alert(
+          "Cart is empty. Please try again."
+        );
+        return;
+      }
+
+      const totalAmount =
+        cartItems.reduce(
+          (acc, item) => {
+            const price =
+              Number(
+                item.price ??
+                  item.product?.price ??
+                  0
+              );
+
+            const qty =
+              Number(
+                item.quantity ??
+                  item.qty ??
+                  1
+              );
+
+            return acc + price * qty;
+          },
+          0
+        );
+
+      navigate("/checkout", {
+        state: {
+          items: cartItems,
+          totalAmount,
+        },
+      });
     } catch (err) {
-      alert("Error adding review");
+      console.error(
+        "Buy now error:",
+        err
+      );
+
+      alert(
+        "Error processing your request: " +
+          err.message
+      );
     }
   };
 
-  if (loading) return <div className="pd-loading">Loading royal collection...</div>;
-  if (!product) return <div className="pd-loading">Product not found.</div>;
+  // ============================================================
+  // WISHLIST
+  // ============================================================
 
-  const discount =
-    product.old_price && product.price
-      ? Math.round(((product.old_price - product.price) / product.old_price) * 100)
-      : 0;
+  const addWishlist = async () => {
+    try {
+      const storedUser =
+        localStorage.getItem("user");
 
-  const thumbnails = [product.img_url, ...(product.thumbnails || [])];
+      if (!storedUser) {
+        alert(
+          "Please login to manage your wishlist"
+        );
+        navigate("/login");
+        return;
+      }
+
+      const user =
+        JSON.parse(storedUser);
+
+      const res = await fetch(
+        `${API_BASE}/review/wishlist/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            product_id: product.id,
+          }),
+        }
+      );
+
+      const data =
+        await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            "Wishlist action failed"
+        );
+      }
+
+      setWishlisted(true);
+
+      alert(
+        "Added to wishlist ❤️"
+      );
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        "Wishlist action failed"
+      );
+    }
+  };
+
+  // ============================================================
+  // ADD REVIEW
+  // ============================================================
+
+  const handleAddReview = async () => {
+    const storedUser =
+      localStorage.getItem("user");
+
+    if (!storedUser) {
+      alert(
+        "Please login to write a review"
+      );
+      navigate("/login");
+      return;
+    }
+
+    const user =
+      JSON.parse(storedUser);
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/review/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            product_id: product.id,
+            rating:
+              newReview.rating,
+            comment:
+              newReview.comment,
+          }),
+        }
+      );
+
+      const data =
+        await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            "Error adding review"
+        );
+      }
+
+      setReviews([
+        data,
+        ...reviews,
+      ]);
+
+      setNewReview({
+        rating: 5,
+        comment: "",
+      });
+
+      alert(
+        "Review submitted successfully! 🌟"
+      );
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        "Error adding review"
+      );
+    }
+  };
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
+  if (loading) {
+    return (
+      <div className="pd-loading">
+        Loading royal collection...
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="pd-loading">
+        Product not found.
+      </div>
+    );
+  }
+
+  // ============================================================
+  // COLOUR VARIANTS
+  // ============================================================
+
+  const variants =
+    getProductVariants();
+
+  const colours = variants
+    .map(
+      (variant) =>
+        variant.colour
+    )
+    .filter(Boolean)
+    .filter(
+      (colour, index, arr) =>
+        arr.findIndex(
+          (item) =>
+            String(item).toLowerCase() ===
+            String(colour).toLowerCase()
+        ) === index
+    );
+
+  // ============================================================
+  // SIZE VARIANTS
+  // ============================================================
+
+  const sizes =
+    selectedVariant &&
+    Array.isArray(
+      selectedVariant.sizes
+    )
+      ? selectedVariant.sizes
+      : [];
 
   return (
     <div className="pd-container">
       <style>{styles}</style>
 
+      {/* ======================================================
+          BREADCRUMB
+      ====================================================== */}
+
       <div className="pd-breadcrumb">
-        <Link to="/">Home</Link> &nbsp;›&nbsp; <Link to="/shop">Shop</Link> &nbsp;›&nbsp; <span>{product.name}</span>
+        <Link to="/">
+          Home
+        </Link>
+
+        &nbsp;›&nbsp;
+
+        <Link to="/shop">
+          Shop
+        </Link>
+
+        &nbsp;›&nbsp;
+
+        <span>
+          {product.name}
+        </span>
       </div>
 
       <div className="pd-wrapper">
-        {/* LEFT SIDE: Image Gallery */}
+
+        {/* ====================================================
+            LEFT SIDE
+        ==================================================== */}
+
         <div className="pd-left">
+
           <div className="pd-main-img-container">
-            <img src={mainImage} alt={product.name} className="pd-main-img" />
-            {discount > 0 && <span className="pd-floating-badge">-{discount}% OFF</span>}
+
+            <img
+              src={
+                mainImage ||
+                cleanImageUrl(
+                  product.img_url
+                )
+              }
+              alt={product.name}
+              className="pd-main-img"
+            />
+
+            {currentDiscount > 0 && (
+              <span className="pd-floating-badge">
+                -{currentDiscount}% OFF
+              </span>
+            )}
           </div>
 
+          {/* ==================================================
+              THUMBNAILS
+          ================================================== */}
+
           <div className="pd-thumbnails">
-            {thumbnails.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt=""
-                className={`pd-thumb ${mainImage === img ? "active-thumb" : ""}`}
-                onClick={() => setMainImage(img)}
-              />
-            ))}
+
+            {thumbnails.map(
+              (img, idx) => (
+                <img
+                  key={`${img}-${idx}`}
+                  src={img}
+                  alt={`${product.name} ${
+                    idx + 1
+                  }`}
+                  className={`pd-thumb ${
+                    mainImage === img
+                      ? "active-thumb"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setMainImage(img)
+                  }
+                />
+              )
+            )}
+
           </div>
         </div>
 
-        {/* RIGHT SIDE: Product Info */}
+        {/* ====================================================
+            RIGHT SIDE
+        ==================================================== */}
+
         <div className="pd-right">
-          <p className="pd-category">{product.category || "Handcrafted Heritage"}</p>
-          <h1 className="pd-title">{product.name}</h1>
+
+          <p className="pd-category">
+            {product.category ||
+              "Handcrafted Heritage"}
+          </p>
+
+          <h1 className="pd-title">
+            {product.name}
+          </h1>
+
+          {/* ==================================================
+              RATING
+          ================================================== */}
 
           <div className="pd-rating">
-            <span className="stars">{starDisplay}</span>
+            <span className="stars">
+              {starDisplay}
+            </span>
+
             <span className="rating-text">
-              {averageRating.toFixed(1)} ({totalReviews} verified review{totalReviews !== 1 ? "s" : ""})
+              {averageRating.toFixed(1)}{" "}
+              ({totalReviews} verified
+              review
+              {totalReviews !== 1
+                ? "s"
+                : ""}
+              )
             </span>
           </div>
+
+          {/* ==================================================
+              PRICE
+          ================================================== */}
 
           <div className="pd-price-row">
+
             <span className="pd-price">
-              ₹{Number(totalPrice).toLocaleString()}
+              ₹
+              {Number(
+                totalPrice
+              ).toLocaleString()}
             </span>
-            {product.old_price && (
+
+            {currentOldPrice > 0 && (
               <>
                 <span className="pd-old">
-                  ₹{Number(product.old_price).toLocaleString()}
+                  ₹
+                  {Number(
+                    currentOldPrice
+                  ).toLocaleString()}
                 </span>
-                <span className="pd-discount">Save {discount}%</span>
+
+                {currentDiscount >
+                  0 && (
+                  <span className="pd-discount">
+                    Save{" "}
+                    {
+                      currentDiscount
+                    }
+                    %
+                  </span>
+                )}
               </>
             )}
+
           </div>
 
+          {/* ==================================================
+              COLOUR VARIANTS
+          ================================================== */}
+
+          {colours.length > 0 && (
+            <div className="pd-variant-section">
+
+              <div className="pd-variant-heading">
+                <span>
+                  Colour:
+                </span>
+
+                <strong>
+                  {selectedColour ||
+                    "Select Colour"}
+                </strong>
+              </div>
+
+              <div className="pd-colour-list">
+
+                {colours.map(
+                  (colour) => {
+                    const variant =
+                      variants.find(
+                        (item) =>
+                          String(
+                            item.colour ||
+                              ""
+                          ).toLowerCase() ===
+                          String(
+                            colour ||
+                              ""
+                          ).toLowerCase()
+                      );
+
+                    const variantImage =
+                      cleanImageUrl(
+                        variant?.mainImage
+                      );
+
+                    const isSelected =
+                      String(
+                        selectedColour ||
+                          ""
+                      ).toLowerCase() ===
+                      String(
+                        colour ||
+                          ""
+                      ).toLowerCase();
+
+                    return (
+                      <button
+                        key={colour}
+                        type="button"
+                        className={`pd-colour-option ${
+                          isSelected
+                            ? "selected-colour"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleColourSelect(
+                            colour
+                          )
+                        }
+                        title={colour}
+                      >
+
+                        <span
+                          className="pd-colour-image-wrap"
+                        >
+                          {variantImage ? (
+                            <img
+                              src={
+                                variantImage
+                              }
+                              alt={
+                                colour
+                              }
+                            />
+                          ) : (
+                            <span
+                              className="pd-colour-dot"
+                              style={{
+                                background:
+                                  colour.toLowerCase(),
+                              }}
+                            />
+                          )}
+                        </span>
+
+                        <span className="pd-colour-name">
+                          {String(
+                            colour
+                          )
+                            .charAt(0)
+                            .toUpperCase() +
+                            String(
+                              colour
+                            ).slice(
+                              1
+                            )}
+                        </span>
+
+                      </button>
+                    );
+                  }
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {/* ==================================================
+              DRESS SIZES
+          ================================================== */}
+
+          {isDressProduct &&
+            selectedVariant &&
+            sizes.length > 0 && (
+              <div className="pd-size-section">
+
+                <div className="pd-variant-heading">
+                  <span>
+                    Size:
+                  </span>
+
+                  <strong>
+                    {selectedSize ||
+                      "Select Size"}
+                  </strong>
+                </div>
+
+                <div className="pd-size-list">
+
+                  {sizes.map(
+                    (sizeItem) => {
+                      const isSelected =
+                        selectedSize ===
+                        sizeItem.size;
+
+                      const outOfStock =
+                        Number(
+                          sizeItem.stock ||
+                            0
+                        ) <= 0;
+
+                      return (
+                        <button
+                          key={
+                            sizeItem.size
+                          }
+                          type="button"
+                          disabled={
+                            outOfStock
+                          }
+                          className={`pd-size-btn ${
+                            isSelected
+                              ? "selected-size"
+                              : ""
+                          } ${
+                            outOfStock
+                              ? "size-out-stock"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            handleSizeSelect(
+                              sizeItem.size
+                            )
+                          }
+                        >
+                          {
+                            sizeItem.size
+                          }
+                        </button>
+                      );
+                    }
+                  )}
+
+                </div>
+              </div>
+            )}
+
+          {/* ==================================================
+              STOCK
+          ================================================== */}
+
           <div className="pd-stock">
-            {product.stock > 0 ? (
+
+            {currentStock > 0 ? (
               <span className="stock-badge in-stock">
-                ✓ In Stock ({product.stock} pieces available)
+                ✓ In Stock (
+                {currentStock}{" "}
+                pieces available)
               </span>
             ) : (
-              <span className="stock-badge out-stock">✕ Currently Out of Stock</span>
+              <span className="stock-badge out-stock">
+                ✕ Currently Out of Stock
+              </span>
             )}
+
           </div>
 
           <hr className="pd-divider" />
 
+          {/* ==================================================
+              SPECS
+          ================================================== */}
+
           <div className="pd-spec-grid">
+
             <div className="pd-spec-box">
-              <span>FABRIC</span>
-              <p>Pure Kanjeevaram Silk</p>
+              <span>
+                FABRIC
+              </span>
+
+              <p>
+                Pure Kanjeevaram Silk
+              </p>
             </div>
+
             <div className="pd-spec-box">
-              <span>LENGTH</span>
-              <p>6.2 meters with Blouse</p>
+              <span>
+                LENGTH
+              </span>
+
+              <p>
+                6.2 meters with Blouse
+              </p>
             </div>
+
             <div className="pd-spec-box">
-              <span>OCCASION</span>
-              <p>Festive & Bridal Wear</p>
+              <span>
+                OCCASION
+              </span>
+
+              <p>
+                Festive & Bridal Wear
+              </p>
             </div>
+
             <div className="pd-spec-box">
-              <span>AUTHENTICITY</span>
-              <p>Handloom Certified</p>
+              <span>
+                AUTHENTICITY
+              </span>
+
+              <p>
+                Handloom Certified
+              </p>
             </div>
+
           </div>
+
+          {/* ==================================================
+              QUANTITY
+          ================================================== */}
 
           <div className="pd-qty-row">
-            <span className="pd-qty-label">Quantity:</span>
+
+            <span className="pd-qty-label">
+              Quantity:
+            </span>
+
             <div className="pd-qty">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
-              <span>{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)}>+</button>
+
+              <button
+                onClick={() =>
+                  setQuantity(
+                    Math.max(
+                      1,
+                      quantity - 1
+                    )
+                  )
+                }
+              >
+                −
+              </button>
+
+              <span>
+                {quantity}
+              </span>
+
+              <button
+                onClick={() =>
+                  setQuantity(
+                    Math.min(
+                      currentStock ||
+                        1,
+                      quantity + 1
+                    )
+                  )
+                }
+                disabled={
+                  quantity >=
+                  currentStock
+                }
+              >
+                +
+              </button>
+
             </div>
           </div>
 
+          {/* ==================================================
+              ACTIONS
+          ================================================== */}
+
           <div className="pd-action-section">
+
             <div className="pd-main-actions">
-              <button 
+
+              <button
                 className="pd-add-to-bag"
-                onClick={() => addToCart(product.id, quantity)}
-                disabled={product.stock === 0}
+                onClick={() =>
+                  addToCart(
+                    product.id,
+                    quantity
+                  )
+                }
+                disabled={
+                  currentStock === 0
+                }
               >
-                <span>👜</span> Add to Bag
+                <span>
+                  👜
+                </span>
+
+                Add to Bag
               </button>
 
-              <button 
-                className={`pd-icon-btn ${wishlisted ? "active-wishlist" : ""}`}
+              <button
+                className={`pd-icon-btn ${
+                  wishlisted
+                    ? "active-wishlist"
+                    : ""
+                }`}
                 title="Wishlist"
-                onClick={addWishlist}
+                onClick={
+                  addWishlist
+                }
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlisted ? "#8b263e":"none"} stroke={wishlisted ? "#8b263e":"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill={
+                    wishlisted
+                      ? "#8b263e"
+                      : "none"
+                  }
+                  stroke={
+                    wishlisted
+                      ? "#8b263e"
+                      : "currentColor"
+                  }
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
               </button>
 
-              <button 
-                className="pd-icon-btn" 
+              <button
+                className="pd-icon-btn"
                 title="Share"
                 onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({ title: product.name, url: window.location.href });
+                  if (
+                    navigator.share
+                  ) {
+                    navigator.share(
+                      {
+                        title:
+                          product.name,
+                        url:
+                          window.location
+                            .href,
+                      }
+                    );
                   } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("Link copied to clipboard!");
+                    navigator.clipboard.writeText(
+                      window.location
+                        .href
+                    );
+
+                    alert(
+                      "Link copied to clipboard!"
+                    );
                   }
                 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="18" cy="5" r="3"></circle>
-                  <circle cx="6" cy="12" r="3"></circle>
-                  <circle cx="18" cy="19" r="3"></circle>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle
+                    cx="18"
+                    cy="5"
+                    r="3"
+                  />
+
+                  <circle
+                    cx="6"
+                    cy="12"
+                    r="3"
+                  />
+
+                  <circle
+                    cx="18"
+                    cy="19"
+                    r="3"
+                  />
+
+                  <line
+                    x1="8.59"
+                    y1="13.51"
+                    x2="15.42"
+                    y2="17.49"
+                  />
+
+                  <line
+                    x1="15.41"
+                    y1="6.51"
+                    x2="8.59"
+                    y2="10.49"
+                  />
                 </svg>
               </button>
+
             </div>
 
-            <button className="pd-buy-now" onClick={handleBuyNow} disabled={product.stock === 0}>
+            <button
+              className="pd-buy-now"
+              onClick={
+                handleBuyNow
+              }
+              disabled={
+                currentStock === 0
+              }
+            >
               ⚡ Proceed to Checkout
             </button>
+
           </div>
+
+          {/* ==================================================
+              TRUST
+          ================================================== */}
 
           <div className="pd-trust">
-            <div>🛡️ 100% Handloom Certified</div>
-            <div>🚚 Free Insured Shipping</div>
-            <div>🔄 7-Day Easy Returns</div>
+            <div>
+              🛡️ 100% Handloom Certified
+            </div>
+
+            <div>
+              🚚 Free Insured Shipping
+            </div>
+
+            <div>
+              🔄 7-Day Easy Returns
+            </div>
           </div>
 
+          {/* ==================================================
+              TABS
+          ================================================== */}
+
           <div className="pd-tabs">
-            <button className={activeTab === "description" ? "active" : ""} onClick={() => setActiveTab("description")}>
+
+            <button
+              className={
+                activeTab ===
+                "description"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab(
+                  "description"
+                )
+              }
+            >
               Description
             </button>
-            <button className={activeTab === "care" ? "active" : ""} onClick={() => setActiveTab("care")}>
+
+            <button
+              className={
+                activeTab === "care"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab("care")
+              }
+            >
               Care & Weave
             </button>
-            <button className={activeTab === "reviews" ? "active" : ""} onClick={() => setActiveTab("reviews")}>
+
+            <button
+              className={
+                activeTab ===
+                "reviews"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab(
+                  "reviews"
+                )
+              }
+            >
               Reviews ({totalReviews})
             </button>
+
           </div>
 
           <div className="pd-tab-content">
-            {activeTab === "description" && (
-              <p className="tab-text">{product.description || "Exquisite drape woven with genuine zari threads, reflecting a majestic heritage aesthetic crafted for elite celebrations."}</p>
+
+            {activeTab ===
+              "description" && (
+              <p className="tab-text">
+                {product.description ||
+                  "Exquisite drape woven with genuine zari threads, reflecting a majestic heritage aesthetic crafted for elite celebrations."}
+              </p>
             )}
-            {activeTab === "care" && (
-              <p className="tab-text">Dry clean only. Store your handloom saree wrapped in clean muslin cloth in a dry, cool place. Air occasionally away from direct sunlight.</p>
+
+            {activeTab ===
+              "care" && (
+              <p className="tab-text">
+                Dry clean only. Store
+                your handloom saree
+                wrapped in clean
+                muslin cloth in a dry,
+                cool place. Air
+                occasionally away from
+                direct sunlight.
+              </p>
             )}
-            {activeTab === "reviews" && (
+
+            {activeTab ===
+              "reviews" && (
               <div className="reviews-section">
+
                 <div className="review-form">
-                  <h3>Leave Your Feedback</h3>
+
+                  <h3>
+                    Leave Your Feedback
+                  </h3>
+
                   <div className="star-input">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
-                        key={star}
-                        className={`star ${star <= newReview.rating ? "active-star" : ""}`}
-                        onClick={() => setNewReview({ ...newReview, rating: star })}
-                      >
-                        ★
-                      </span>
-                    ))}
+
+                    {[1, 2, 3, 4, 5].map(
+                      (star) => (
+                        <span
+                          key={star}
+                          className={`star ${
+                            star <=
+                            newReview.rating
+                              ? "active-star"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setNewReview({
+                              ...newReview,
+                              rating:
+                                star,
+                            })
+                          }
+                        >
+                          ★
+                        </span>
+                      )
+                    )}
+
                   </div>
 
                   <textarea
-                    placeholder="Share your experience with this saree..."
-                    value={newReview.comment}
-                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                    placeholder="Share your experience with this product..."
+                    value={
+                      newReview.comment
+                    }
+                    onChange={(e) =>
+                      setNewReview({
+                        ...newReview,
+                        comment:
+                          e.target.value,
+                      })
+                    }
                   />
 
-                  <button className="submit-review-btn" onClick={handleAddReview}>Post Review</button>
+                  <button
+                    className="submit-review-btn"
+                    onClick={
+                      handleAddReview
+                    }
+                  >
+                    Post Review
+                  </button>
+
                 </div>
 
                 <div className="review-list">
-                  {reviews.length === 0 && <p className="no-reviews">No reviews for this product yet. Be the first to share your experience!</p>}
 
-                  {reviews.map((rev) => (
-                    <div key={rev.id} className="review-card">
-                      <div className="review-rating">
-                        {"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}
+                  {reviews.length ===
+                    0 && (
+                    <p className="no-reviews">
+                      No reviews for this
+                      product yet. Be
+                      the first to share
+                      your experience!
+                    </p>
+                  )}
+
+                  {reviews.map(
+                    (rev) => (
+                      <div
+                        key={rev.id}
+                        className="review-card"
+                      >
+                        <div className="review-rating">
+                          {"★".repeat(
+                            Number(
+                              rev.rating ||
+                                0
+                            )
+                          )}
+
+                          {"☆".repeat(
+                            5 -
+                              Number(
+                                rev.rating ||
+                                  0
+                              )
+                          )}
+                        </div>
+
+                        <p className="review-comment">
+                          {
+                            rev.comment
+                          }
+                        </p>
                       </div>
-                      <p className="review-comment">{rev.comment}</p>
-                    </div>
-                  ))}
+                    )
+                  )}
+
                 </div>
+
               </div>
             )}
+
           </div>
         </div>
       </div>
 
-      {/* RELATED PRODUCTS SECTION */}
-      {relatedProducts.length > 0 && (
+      {/* ======================================================
+          RELATED PRODUCTS
+      ====================================================== */}
+
+      {relatedProducts.length >
+        0 && (
         <section className="related-section">
-          <p className="related-subtitle">COMPLETE YOUR WARDROBE</p>
-          <h2 className="related-title">You May Also Like</h2>
+
+          <p className="related-subtitle">
+            COMPLETE YOUR WARDROBE
+          </p>
+
+          <h2 className="related-title">
+            You May Also Like
+          </h2>
 
           <div className="related-grid">
-            {relatedProducts.map((item) => {
-              const relatedDiscount = item.old_price
-                ? Math.round(((item.old_price - item.price) / item.old_price) * 100)
-                : 0;
 
-              return (
-                <div key={item.id} className="related-card-wrapper">
-                  <Link to={`/product/${item.id}`} className="related-card">
-                    <div className="related-img-container">
-                      <img src={item.img_url} alt={item.name} />
-                      <div className="related-badges">
-                        {relatedDiscount > 0 && (
-                          <span className="badge-discount">-{relatedDiscount}%</span>
-                        )}
-                      </div>
-                    </div>
+            {relatedProducts.map(
+              (item) => {
 
-                    <div className="related-info">
-                      <p className="related-item-cat">{item.category || "Saree"}</p>
-                      <h3 className="related-item-name">{item.name}</h3>
-                      <div className="related-price-row">
-                        <span className="related-curr-price">₹{Number(item.price).toLocaleString()}</span>
-                        {item.old_price && (
-                          <span className="related-old-price">₹{Number(item.old_price).toLocaleString()}</span>
-                        )}
+                const relatedDiscount =
+                  item.old_price
+                    ? Math.round(
+                        ((item.old_price -
+                          item.price) /
+                          item.old_price) *
+                          100
+                      )
+                    : 0;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="related-card-wrapper"
+                  >
+                    <Link
+                      to={`/product/${item.id}`}
+                      className="related-card"
+                    >
+
+                      <div className="related-img-container">
+
+                        <img
+                          src={
+                            item.img_url
+                          }
+                          alt={
+                            item.name
+                          }
+                        />
+
+                        <div className="related-badges">
+
+                          {relatedDiscount >
+                            0 && (
+                            <span className="badge-discount">
+                              -
+                              {
+                                relatedDiscount
+                              }
+                              %
+                            </span>
+                          )}
+
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
+
+                      <div className="related-info">
+
+                        <p className="related-item-cat">
+                          {item.category ||
+                            "Saree"}
+                        </p>
+
+                        <h3 className="related-item-name">
+                          {item.name}
+                        </h3>
+
+                        <div className="related-price-row">
+
+                          <span className="related-curr-price">
+                            ₹
+                            {Number(
+                              item.price
+                            ).toLocaleString()}
+                          </span>
+
+                          {item.old_price && (
+                            <span className="related-old-price">
+                              ₹
+                              {Number(
+                                item.old_price
+                              ).toLocaleString()}
+                            </span>
+                          )}
+
+                        </div>
+                      </div>
+
+                    </Link>
+                  </div>
+                );
+              }
+            )}
+
           </div>
         </section>
       )}
@@ -501,7 +1885,12 @@ const ProductdetailedPage = () => {
   );
 };
 
+// ============================================================
+// STYLES
+// ============================================================
+
 const styles = `
+
 .pd-container {
   padding: 40px 6%;
   font-family: 'Playfair Display', serif, sans-serif;
@@ -541,7 +1930,8 @@ const styles = `
   flex-wrap: wrap;
 }
 
-.pd-left, .pd-right {
+.pd-left,
+.pd-right {
   flex: 1 1 450px;
 }
 
@@ -558,6 +1948,7 @@ const styles = `
   width: 100%;
   height: 520px;
   object-fit: cover;
+  display: block;
   transition: transform 0.5s ease;
 }
 
@@ -589,12 +1980,17 @@ const styles = `
 .pd-thumb {
   width: 80px;
   height: 90px;
+  flex: 0 0 80px;
   border-radius: 12px;
   object-fit: cover;
   cursor: pointer;
   border: 2px solid rgba(106, 46, 124, 0.2);
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(74, 25, 89, 0.08);
+}
+
+.pd-thumb:hover {
+  transform: translateY(-2px);
 }
 
 .pd-thumb.active-thumb {
@@ -667,6 +2063,144 @@ const styles = `
   font-weight: 700;
   border: 1px solid rgba(106, 46, 124, 0.25);
 }
+
+/* ============================================================
+   VARIANTS
+============================================================ */
+
+.pd-variant-section,
+.pd-size-section {
+  margin: 20px 0;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
+  border: 1px solid rgba(106, 46, 124, 0.18);
+}
+
+.pd-variant-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #3b1443;
+  font-size: 15px;
+}
+
+.pd-variant-heading span {
+  font-weight: 600;
+}
+
+.pd-variant-heading strong {
+  color: #6a2e7c;
+  text-transform: capitalize;
+}
+
+/* Colour buttons */
+
+.pd-colour-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pd-colour-option {
+  min-width: 95px;
+  padding: 7px;
+  border-radius: 14px;
+  background: #fff;
+  border: 2px solid rgba(106, 46, 124, 0.18);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.pd-colour-option:hover {
+  transform: translateY(-2px);
+  border-color: #6a2e7c;
+}
+
+.pd-colour-option.selected-colour {
+  border-color: #6a2e7c;
+  box-shadow: 0 5px 16px rgba(106, 46, 124, 0.25);
+  background: #faf6fc;
+}
+
+.pd-colour-image-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+}
+
+.pd-colour-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd-colour-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.1);
+}
+
+.pd-colour-name {
+  font-size: 12px;
+  color: #3b1443;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+/* Size buttons */
+
+.pd-size-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-size-btn {
+  min-width: 58px;
+  padding: 11px 16px;
+  background: #fff;
+  color: #3b1443;
+  border: 1px solid rgba(106, 46, 124, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.pd-size-btn:hover:not(:disabled) {
+  border-color: #6a2e7c;
+  transform: translateY(-2px);
+}
+
+.pd-size-btn.selected-size {
+  background: #5c2069;
+  color: #fff;
+  border-color: #5c2069;
+  box-shadow: 0 5px 14px rgba(92, 32, 105, 0.25);
+}
+
+.pd-size-btn.size-out-stock {
+  color: #aaa;
+  background: #f3f3f3;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   STOCK
+============================================================ */
 
 .pd-stock {
   margin-bottom: 20px;
@@ -760,6 +2294,11 @@ const styles = `
   font-weight: bold;
 }
 
+.pd-qty button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
 .pd-action-section {
   display: flex;
   flex-direction: column;
@@ -793,7 +2332,6 @@ const styles = `
 .pd-add-to-bag:hover:not(:disabled) {
   background: linear-gradient(135deg, #6a2e7c, #5c2069);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(92, 32, 105, 0.4);
 }
 
 .pd-add-to-bag:disabled {
@@ -825,8 +2363,8 @@ const styles = `
 
 .pd-buy-now {
   width: 100%;
-  background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%); /* Luxurious Royal Gold gradient */
-  color: #3b1443; /* Deep purple text for high contrast and readability on gold */
+  background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+  color: #3b1443;
   padding: 16px;
   border-radius: 40px;
   border: 1px solid #f3e5ab;
@@ -835,13 +2373,11 @@ const styles = `
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
   transition: all 0.3s ease;
-  letter-spacing: 0.5px;
 }
 
 .pd-buy-now:hover:not(:disabled) {
   background: linear-gradient(135deg, #e2be42, #b89832);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
 }
 
 .pd-buy-now:disabled {
@@ -863,7 +2399,6 @@ const styles = `
   font-weight: 600;
   margin-bottom: 25px;
   border: 1px solid rgba(106, 46, 124, 0.18);
-  box-shadow: 0 4px 12px rgba(74, 25, 89, 0.05);
 }
 
 .pd-tabs {
@@ -872,7 +2407,6 @@ const styles = `
   border-radius: 30px;
   padding: 4px;
   margin-bottom: 15px;
-  border: 1px solid rgba(106, 46, 124, 0.15);
 }
 
 .pd-tabs button {
@@ -884,13 +2418,11 @@ const styles = `
   font-weight: 600;
   color: #6e4878;
   border-radius: 25px;
-  transition: all 0.3s ease;
 }
 
 .pd-tabs button.active {
   background: #5c2069;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(92, 32, 105, 0.25);
 }
 
 .pd-tab-content {
@@ -929,11 +2461,6 @@ const styles = `
 
 .star {
   color: #d8c5df;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.star:hover {
-  transform: scale(1.2);
 }
 
 .active-star {
@@ -951,10 +2478,6 @@ const styles = `
   resize: vertical;
 }
 
-.review-form textarea::placeholder {
-  color: #9c7aa6;
-}
-
 .submit-review-btn {
   background: #5c2069;
   color: #fff;
@@ -964,7 +2487,6 @@ const styles = `
   font-weight: 700;
   cursor: pointer;
   width: fit-content;
-  box-shadow: 0 4px 12px rgba(92, 32, 105, 0.25);
 }
 
 .review-list {
@@ -983,7 +2505,6 @@ const styles = `
 .review-rating {
   color: #d4af37;
   margin-bottom: 6px;
-  font-size: 14px;
 }
 
 .review-comment {
@@ -995,10 +2516,12 @@ const styles = `
 .no-reviews {
   color: #6a2e7c;
   font-style: italic;
-  margin: 0;
 }
 
-/* Related Products */
+/* ============================================================
+   RELATED PRODUCTS
+============================================================ */
+
 .related-section {
   margin-top: 80px;
   text-align: center;
@@ -1036,7 +2559,6 @@ const styles = `
 
 .related-card-wrapper:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(106, 46, 124, 0.18);
 }
 
 .related-card {
@@ -1055,11 +2577,6 @@ const styles = `
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.related-card:hover .related-img-container img {
-  transform: scale(1.06);
 }
 
 .related-badges {
@@ -1115,24 +2632,59 @@ const styles = `
   text-decoration: line-through;
 }
 
+/* ============================================================
+   MOBILE
+============================================================ */
+
 @media(max-width: 768px) {
+
+  .pd-container {
+    padding: 25px 4%;
+  }
+
   .pd-wrapper {
     flex-direction: column;
     gap: 30px;
   }
+
   .pd-title {
     font-size: 28px;
   }
+
   .pd-price {
     font-size: 26px;
   }
+
+  .pd-main-img {
+    height: 430px;
+  }
+
+  .pd-spec-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pd-trust {
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .related-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
+
   .related-img-container {
     height: 220px;
   }
+
+  .pd-colour-list {
+    gap: 8px;
+  }
+
+  .pd-colour-option {
+    min-width: 82px;
+  }
+
 }
 `;
 
