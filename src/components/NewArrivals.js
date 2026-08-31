@@ -41,7 +41,7 @@ const NewArrivals = () => {
           >
             <div style={styles.productCard} className="product-card">
               {/* Image Container */}
-              <div style={styles.imageWrapper}>
+              <div style={styles.imageWrapper} className="product-image-wrapper">
                 <img
                   src={product.img_url || product.thumbnails?.[0]}
                   alt={product.name}
@@ -57,8 +57,6 @@ const NewArrivals = () => {
                   )}
                 </div>
 
-              
-
                 {/* Subtle Action Overlay */}
                 <div className="actions" style={styles.actionOverlay}>
                   <button style={styles.quickView} onClick={(e) => { e.preventDefault(); }}>Quick View</button>
@@ -67,7 +65,7 @@ const NewArrivals = () => {
               </div>
 
               {/* Product Info - Compact & Clean */}
-              <div style={styles.info}>
+              <div style={styles.info} className="product-info">
                 <p style={styles.category}>{product.category || "Handloom Saree"}</p>
                 <h3 style={styles.productName}>{product.name}</h3>
 
@@ -120,10 +118,27 @@ const NewArrivals = () => {
           @media (max-width: 768px) {
             .new-arrivals-grid {
               grid-template-columns: repeat(2, 1fr) !important;
-              gap: 12px !important;
-              padding: 0 5px !important;
+              gap: 10px !important;
+              padding: 0 2px !important;
             }
-            .actions { opacity: 1 !important; position: relative !important; background: none !important; padding: 8px 0 0 0 !important; }
+            .product-image-wrapper {
+              height: 200px !important; /* Prevents images from looking too stretched vertically on mobile */
+            }
+            .product-info {
+              padding: 10px 8px !important;
+            }
+            .actions { 
+              opacity: 1 !important; 
+              position: relative !important; 
+              background: none !important; 
+              padding: 6px 0 0 0 !important; 
+              gap: 4px !important;
+            }
+            .actions button {
+              font-size: 8px !important;
+              padding: 6px 2px !important;
+              letter-spacing: 0.2px !important;
+            }
           }
         `}
       </style>
@@ -177,7 +192,6 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    // Smaller columns setup for a compact, neat aesthetic (min 240px instead of 280px)
     gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
     gap: '24px',
   },
@@ -190,7 +204,7 @@ const styles = {
   },
   imageWrapper: {
     position: 'relative',
-    height: '320px', // Reduced height for a more compact card structure
+    height: '320px',
     overflow: 'hidden',
     backgroundColor: '#F3EBF5',
   },
@@ -226,23 +240,6 @@ const styles = {
     fontWeight: '600',
     letterSpacing: '1px',
   },
-  wishlistBtn: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    width: '30px',
-    height: '30px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    border: 'none',
-    color: '#4B2954',
-    fontSize: '15px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    zIndex: 2,
-  },
   actionOverlay: {
     position: 'absolute',
     bottom: '0',
@@ -254,7 +251,7 @@ const styles = {
     gap: '8px',
     background: 'linear-gradient(to top, rgba(75, 41, 84, 0.85) 0%, rgba(75, 41, 84, 0.3) 75%, transparent 100%)',
     backdropFilter: 'blur(3px)',
-    zIndex: 2,
+    zIndex: '2',
   },
   quickView: {
     flex: 1,
@@ -283,7 +280,7 @@ const styles = {
     textTransform: 'uppercase',
   },
   info: {
-    padding: '16px 14px', // Reduced padding for compact layout
+    padding: '16px 14px',
   },
   category: {
     color: '#8E7394',
@@ -294,7 +291,7 @@ const styles = {
     fontWeight: '500',
   },
   productName: {
-    fontSize: '14px', // Refined cleaner smaller heading size
+    fontSize: '14px',
     margin: '0 0 8px',
     color: '#4B2954',
     fontFamily: '"Playfair Display", serif',
@@ -302,7 +299,7 @@ const styles = {
     lineHeight: '1.3',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    textOverflow: 'ellipsis', // Truncates long names to keep card uniform
+    textOverflow: 'ellipsis',
   },
   priceRow: {
     display: 'flex',
