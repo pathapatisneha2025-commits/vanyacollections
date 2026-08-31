@@ -28,58 +28,63 @@ const NewArrivals = () => {
           <h2 style={styles.title}>New Arrivals</h2>
           <div style={styles.underline}></div>
         </div>
-<Link to="/new-arrivals" style={styles.viewAll} className="view-all-link">
-  View All →
-</Link>
+        <Link to="/products" style={styles.viewAll} className="view-all-link">View All →</Link>
       </div>
 
       {/* Product Grid */}
       <div style={styles.grid} className="new-arrivals-grid">
         {products.map((product) => (
-          <Link
-            key={product.id}
-            to={`/product/${product.id}`}
-            style={{ textDecoration: 'none', color: 'inherit', display: 'block', minWidth: 0 }}
-          >
-            <div style={styles.productCard} className="product-card">
-              {/* Image Container */}
-              <div style={styles.imageWrapper} className="product-image-wrapper">
-                <img
-                  src={product.img_url || product.thumbnails?.[0]}
-                  alt={product.name}
-                  style={styles.image}
-                  className="product-image"
-                />
+          <div key={product.id} style={styles.productCardWrapper} className="product-card-wrapper">
+            <Link
+              to={`/product/${product.id}`}
+              style={{ textDecoration: 'none', color: 'inherit', display: 'block', minWidth: 0 }}
+            >
+              <div style={styles.productCard} className="product-card">
+                {/* Image Container */}
+                <div style={styles.imageWrapper} className="product-image-wrapper">
+                  <img
+                    src={product.img_url || product.thumbnails?.[0]}
+                    alt={product.name}
+                    style={styles.image}
+                    className="product-image"
+                  />
 
-                {/* Compact Badges */}
-                <div style={styles.badgeContainer}>
-                  <span style={styles.badgeNew}>NEW</span>
-                  {product.discount > 0 && (
-                    <span style={styles.badgeDiscount}>{product.discount}% OFF</span>
-                  )}
+                  {/* Compact Badges */}
+                  <div style={styles.badgeContainer}>
+                    <span style={styles.badgeNew}>NEW</span>
+                    {product.discount > 0 && (
+                      <span style={styles.badgeDiscount}>{product.discount}% OFF</span>
+                    )}
+                  </div>
+
+                  {/* Desktop Hover Action Overlay */}
+                  <div className="actions desktop-actions" style={styles.actionOverlay}>
+                    <button style={styles.quickView} onClick={(e) => { e.preventDefault(); }}>Quick View</button>
+                    <button style={styles.addToCart} onClick={(e) => { e.preventDefault(); }}>Add to Bag</button>
+                  </div>
                 </div>
 
-                {/* Subtle Action Overlay */}
-                <div className="actions" style={styles.actionOverlay}>
-                  <button style={styles.quickView} onClick={(e) => { e.preventDefault(); }}>Quick View</button>
-                  <button style={styles.addToCart} onClick={(e) => { e.preventDefault(); }}>Add to Bag</button>
+                {/* Product Info - Compact & Clean */}
+                <div style={styles.info} className="product-info">
+                  <p style={styles.category}>{product.category || "Handloom Saree"}</p>
+                  <h3 style={styles.productName}>{product.name}</h3>
+
+                  <div style={styles.priceRow}>
+                    <span style={styles.currentPrice}>₹{Number(product.price).toLocaleString()}</span>
+                    {product.old_price && Number(product.old_price) > Number(product.price) && (
+                      <span style={styles.oldPrice}>₹{Number(product.old_price).toLocaleString()}</span>
+                    )}
+                  </div>
                 </div>
               </div>
+            </Link>
 
-              {/* Product Info - Compact & Clean */}
-              <div style={styles.info} className="product-info">
-                <p style={styles.category}>{product.category || "Handloom Saree"}</p>
-                <h3 style={styles.productName}>{product.name}</h3>
-
-                <div style={styles.priceRow}>
-                  <span style={styles.currentPrice}>₹{Number(product.price).toLocaleString()}</span>
-                  {product.old_price && Number(product.old_price) > Number(product.price) && (
-                    <span style={styles.oldPrice}>₹{Number(product.old_price).toLocaleString()}</span>
-                  )}
-                </div>
-              </div>
+            {/* Mobile-Only Permanent Action Buttons (Placed Outside Link to prevent routing bugs) */}
+            <div className="mobile-actions" style={styles.mobileActionRow}>
+              <button style={styles.mobileQuickView} onClick={() => {}}>Quick View</button>
+              <button style={styles.mobileAddToCart} onClick={() => {}}>Add to Bag</button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
@@ -115,34 +120,45 @@ const NewArrivals = () => {
             color: #C22730 !important;
           }
 
-          .actions { opacity: 0; transition: opacity 0.25s ease; }
-          .product-card:hover .actions { opacity: 1; }
+          .desktop-actions { opacity: 0; transition: opacity 0.25s ease; }
+          .product-card:hover .desktop-actions { opacity: 1; }
+          .mobile-actions { display: none; }
 
           @media (max-width: 768px) {
             .new-arrivals-container {
-              padding: 25px 10px !important; /* Reduces outer side padding so cards have more room */
+              padding: 25px 10px !important;
             }
             .new-arrivals-grid {
               grid-template-columns: repeat(2, 1fr) !important;
-              gap: 8px !important; /* Smaller gap to maximize available screen space */
+              gap: 10px !important;
             }
             .product-image-wrapper {
-              height: 175px !important; /* Scaled nicely for smaller mobile viewports */
+              height: 160px !important;
             }
             .product-info {
-              padding: 10px 8px !important;
+              padding: 8px 8px 4px 8px !important;
             }
-            .actions { 
-              opacity: 1 !important; 
-              position: relative !important; 
-              background: none !important; 
-              padding: 4px 0 0 0 !important; 
-              gap: 3px !important;
+            .desktop-actions { 
+              display: none !important; 
             }
-            .actions button {
-              font-size: 7.5px !important;
-              padding: 5px 2px !important;
-              letter-spacing: 0.1px !important;
+            .mobile-actions { 
+              display: flex !important; 
+              gap: 4px; 
+              padding: 0 8px 8px 8px;
+              background: #FFFFFF;
+              border-bottom-left-radius: 8px;
+              border-bottom-right-radius: 8px;
+            }
+            .product-card-wrapper {
+              background: #FFFFFF;
+              border-radius: 8px;
+              border: 1px solid rgba(75, 41, 84, 0.08);
+              box-shadow: 0 4px 15px rgba(75, 41, 84, 0.04);
+              overflow: hidden;
+            }
+            .product-card {
+              border: none !important;
+              box-shadow: none !important;
             }
           }
         `}
@@ -321,6 +337,34 @@ const styles = {
     fontSize: '10.5px',
     color: '#9E8C9E',
     textDecoration: 'line-through',
+  },
+  mobileActionRow: {
+    display: 'flex',
+    gap: '4px',
+  },
+  mobileQuickView: {
+    flex: 1,
+    padding: '6px 2px',
+    border: '1px solid rgba(75, 41, 84, 0.15)',
+    borderRadius: '3px',
+    backgroundColor: '#FAF5FC',
+    color: '#4B2954',
+    cursor: 'pointer',
+    fontSize: '8px',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  mobileAddToCart: {
+    flex: 1,
+    padding: '6px 2px',
+    border: 'none',
+    borderRadius: '3px',
+    backgroundColor: '#D4AF37',
+    color: '#222222',
+    cursor: 'pointer',
+    fontSize: '8px',
+    fontWeight: '700',
+    textTransform: 'uppercase',
   }
 };
 
