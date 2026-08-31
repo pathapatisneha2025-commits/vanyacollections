@@ -20,9 +20,9 @@ const NewArrivals = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="new-arrivals-container">
       {/* Header */}
-      <div style={styles.header}>
+      <div style={styles.header} className="new-arrivals-header">
         <div>
           <span style={styles.tagline}>✦ CURATED EXCLUSIVES ✦</span>
           <h2 style={styles.title}>New Arrivals</h2>
@@ -37,7 +37,7 @@ const NewArrivals = () => {
           <Link
             key={product.id}
             to={`/product/${product.id}`}
-            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+            style={{ textDecoration: 'none', color: 'inherit', display: 'block', minWidth: 0 }}
           >
             <div style={styles.productCard} className="product-card">
               {/* Image Container */}
@@ -87,9 +87,10 @@ const NewArrivals = () => {
 
           .product-card {
             transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+            height: 100%;
+            box-sizing: border-box;
           }
 
-          /* Elegant hover state with subtle purple shadow & gold outline */
           .product-card:hover {
             transform: translateY(-5px);
             border-color: #D4AF37 !important;
@@ -116,13 +117,15 @@ const NewArrivals = () => {
           .product-card:hover .actions { opacity: 1; }
 
           @media (max-width: 768px) {
+            .new-arrivals-container {
+              padding: 25px 10px !important; /* Reduces outer side padding so cards have more room */
+            }
             .new-arrivals-grid {
               grid-template-columns: repeat(2, 1fr) !important;
-              gap: 10px !important;
-              padding: 0 2px !important;
+              gap: 8px !important; /* Smaller gap to maximize available screen space */
             }
             .product-image-wrapper {
-              height: 200px !important; /* Prevents images from looking too stretched vertically on mobile */
+              height: 175px !important; /* Scaled nicely for smaller mobile viewports */
             }
             .product-info {
               padding: 10px 8px !important;
@@ -131,13 +134,13 @@ const NewArrivals = () => {
               opacity: 1 !important; 
               position: relative !important; 
               background: none !important; 
-              padding: 6px 0 0 0 !important; 
-              gap: 4px !important;
+              padding: 4px 0 0 0 !important; 
+              gap: 3px !important;
             }
             .actions button {
-              font-size: 8px !important;
-              padding: 6px 2px !important;
-              letter-spacing: 0.2px !important;
+              font-size: 7.5px !important;
+              padding: 5px 2px !important;
+              letter-spacing: 0.1px !important;
             }
           }
         `}
@@ -154,6 +157,7 @@ const styles = {
     fontFamily: '"Montserrat", sans-serif',
     backgroundColor: '#FAF5FC',
     minHeight: '100vh',
+    boxSizing: 'border-box',
   },
   header: {
     display: 'flex',
@@ -291,7 +295,7 @@ const styles = {
     fontWeight: '500',
   },
   productName: {
-    fontSize: '14px',
+    fontSize: '13px',
     margin: '0 0 8px',
     color: '#4B2954',
     fontFamily: '"Playfair Display", serif',
@@ -304,15 +308,15 @@ const styles = {
   priceRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '6px',
   },
   currentPrice: {
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: '700',
     color: '#C22730',
   },
   oldPrice: {
-    fontSize: '11px',
+    fontSize: '10.5px',
     color: '#9E8C9E',
     textDecoration: 'line-through',
   }
