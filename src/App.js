@@ -25,6 +25,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import CategoryProducts from "./pages/CategoryProduct";
 import BestSellers from "./pages/BestSeller";
+import VanyaNewArrivals from "./pages/NewArrivals";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -73,7 +74,7 @@ function App() {
             <Route path="/ProfilePage" element={<ProfilePage />} />
             <Route path="/wishlist" element={<Wishlist />} />
 
-            <Route path="/new-arrivals" element={<NewArrivals/>} />
+            <Route path="/new-arrivals" element={<VanyaNewArrivals/>} />
 
             <Route path="/best-sellers" element={<BestSellers/>} />
 

@@ -1,13 +1,23 @@
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+const CART_API =
+  "https://vanyabackenddatabase-vahr.onrender.com/cart";
 
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
+  const [addingProduct, setAddingProduct] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchNewArrivals();
   }, []);
+
+  // ============================================================
+  // FETCH NEW ARRIVALS
+  // ============================================================
 
   const fetchNewArrivals = async () => {
     try {
@@ -31,12 +41,155 @@ const NewArrivals = () => {
     }
   };
 
+  // ============================================================
+  // QUICK VIEW
+  // ============================================================
+
+  const handleQuickView = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    navigate(`/product/${product.id}`);
+  };
+
+  // ============================================================
+  // ADD TO CART
+  // ============================================================
+
+  const handleAddToCart = async (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (addingProduct === product.id) {
+      return;
+    }
+
+    try {
+      setAddingProduct(product.id);
+
+      // --------------------------------------------------------
+      // GET USER
+      // --------------------------------------------------------
+
+      const storedUser =
+        localStorage.getItem("user") ||
+        localStorage.getItem("customer");
+
+      let user = null;
+
+      try {
+        user = storedUser ? JSON.parse(storedUser) : null;
+      } catch (err) {
+        console.error("Invalid user data:", err);
+      }
+
+      // --------------------------------------------------------
+      // GET USER ID
+      // --------------------------------------------------------
+
+      const userId =
+        user?.id ||
+        user?.user_id ||
+        user?.userId;
+
+      // --------------------------------------------------------
+      // If your application requires login
+      // --------------------------------------------------------
+
+      if (!userId) {
+        alert("Please login to add products to your cart.");
+        navigate("/login");
+        return;
+      }
+
+      // --------------------------------------------------------
+      // CART PAYLOAD
+      // --------------------------------------------------------
+
+      const cartItem = {
+        user_id: userId,
+        product_id: product.id,
+        quantity: 1,
+
+        name: product.name,
+
+        price: Number(product.price || 0),
+
+        old_price: Number(
+          product.old_price || product.oldPrice || 0
+        ),
+
+        image:
+          product.img_url ||
+          product.mainImage ||
+          product.thumbnails?.[0] ||
+          "",
+
+        category: product.category || "",
+
+        size: product.sizes
+          ? Array.isArray(product.sizes)
+            ? product.sizes[0]
+            : product.sizes
+          : null,
+
+        colour:
+          product.colour ||
+          product.color ||
+          "",
+      };
+
+      console.log("ADDING TO CART:", cartItem);
+
+      // --------------------------------------------------------
+      // SEND TO CART API
+      // --------------------------------------------------------
+
+    const response = await fetch(`${CART_API}/add`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(cartItem),
+});
+
+      const result = await response.json();
+
+      console.log("CART RESPONSE:", result);
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message ||
+            result?.error ||
+            "Unable to add product to cart"
+        );
+      }
+
+      alert("Product added to cart successfully!");
+
+      // Optional: go to cart
+      // navigate("/cart");
+
+    } catch (error) {
+      console.error("ADD TO CART ERROR:", error);
+
+      alert(
+        error.message ||
+          "Unable to add product to cart"
+      );
+    } finally {
+      setAddingProduct(null);
+    }
+  };
+
   return (
     <div
       style={styles.container}
       className="new-arrivals-container"
     >
-      {/* ================= HEADER ================= */}
+      {/* ===================================================== */}
+      {/* HEADER */}
+      {/* ===================================================== */}
 
       <div
         style={styles.header}
@@ -63,7 +216,9 @@ const NewArrivals = () => {
         </Link>
       </div>
 
-      {/* ================= PRODUCT GRID ================= */}
+      {/* ===================================================== */}
+      {/* PRODUCT GRID */}
+      {/* ===================================================== */}
 
       <div
         style={styles.grid}
@@ -75,9 +230,9 @@ const NewArrivals = () => {
             style={styles.productCardWrapper}
             className="product-card-wrapper"
           >
-            {/* ============================================ */}
+            {/* ================================================= */}
             {/* PRODUCT LINK */}
-            {/* ============================================ */}
+            {/* ================================================= */}
 
             <Link
               to={`/product/${product.id}`}
@@ -93,7 +248,9 @@ const NewArrivals = () => {
                 style={styles.productCard}
                 className="product-card"
               >
-                {/* ================= IMAGE ================= */}
+                {/* ============================================= */}
+                {/* IMAGE */}
+                {/* ============================================= */}
 
                 <div
                   style={styles.imageWrapper}
@@ -102,89 +259,145 @@ const NewArrivals = () => {
                   <img
                     src={
                       product.img_url ||
+                      product.mainImage ||
                       product.thumbnails?.[0]
                     }
-                    alt={product.name || "Product"}
+                    alt={
+                      product.name ||
+                      "Product"
+                    }
                     style={styles.image}
                     className="product-image"
                   />
 
-                  {/* ================= BADGES ================= */}
+                  {/* =========================================== */}
+                  {/* BADGES */}
+                  {/* =========================================== */}
 
-                  <div style={styles.badgeContainer}>
-                    <span style={styles.badgeNew}>
+                  <div
+                    style={styles.badgeContainer}
+                  >
+                    <span
+                      style={styles.badgeNew}
+                    >
                       NEW
                     </span>
 
-                    {Number(product.discount) > 0 && (
-                      <span style={styles.badgeDiscount}>
+                    {Number(
+                      product.discount
+                    ) > 0 && (
+                      <span
+                        style={
+                          styles.badgeDiscount
+                        }
+                      >
                         {product.discount}% OFF
                       </span>
                     )}
                   </div>
 
-                  {/* ============================================ */}
-                  {/* DESKTOP ACTIONS - HIDDEN UNTIL HOVER */}
-                  {/* ============================================ */}
+                  {/* =========================================== */}
+                  {/* DESKTOP ACTIONS */}
+                  {/* =========================================== */}
 
                   <div
                     className="desktop-actions"
                     style={styles.actionOverlay}
                   >
+                    {/* QUICK VIEW */}
+
                     <button
                       type="button"
                       style={styles.quickView}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
+                      onClick={(e) =>
+                        handleQuickView(
+                          e,
+                          product
+                        )
+                      }
                     >
                       Quick View
                     </button>
 
+                    {/* ADD TO BAG */}
+
                     <button
                       type="button"
-                      style={styles.addToCart}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
+                      style={
+                        styles.addToCart
+                      }
+                      disabled={
+                        addingProduct ===
+                        product.id
+                      }
+                      onClick={(e) =>
+                        handleAddToCart(
+                          e,
+                          product
+                        )
+                      }
                     >
-                      Add to Bag
+                      {addingProduct ===
+                      product.id
+                        ? "Adding..."
+                        : "Add to Bag"}
                     </button>
                   </div>
                 </div>
 
-                {/* ================= PRODUCT INFO ================= */}
+                {/* ============================================= */}
+                {/* PRODUCT INFO */}
+                {/* ============================================= */}
 
                 <div
                   style={styles.info}
                   className="product-info"
                 >
                   <p style={styles.category}>
-                    {product.category || "Handloom Saree"}
+                    {product.category ||
+                      "Handloom Saree"}
                   </p>
 
-                  <h3 style={styles.productName}>
+                  <h3
+                    style={styles.productName}
+                  >
                     {product.name}
                   </h3>
 
-                  <div style={styles.priceRow}>
-                    <span style={styles.currentPrice}>
+                  <div
+                    style={styles.priceRow}
+                  >
+                    <span
+                      style={
+                        styles.currentPrice
+                      }
+                    >
                       ₹
                       {Number(
                         product.price || 0
-                      ).toLocaleString("en-IN")}
+                      ).toLocaleString(
+                        "en-IN"
+                      )}
                     </span>
 
                     {product.old_price &&
-                      Number(product.old_price) >
-                        Number(product.price) && (
-                        <span style={styles.oldPrice}>
+                      Number(
+                        product.old_price
+                      ) >
+                        Number(
+                          product.price
+                        ) && (
+                        <span
+                          style={
+                            styles.oldPrice
+                          }
+                        >
                           ₹
                           {Number(
                             product.old_price
-                          ).toLocaleString("en-IN")}
+                          ).toLocaleString(
+                            "en-IN"
+                          )}
                         </span>
                       )}
                   </div>
@@ -192,66 +405,77 @@ const NewArrivals = () => {
               </div>
             </Link>
 
-            {/* ============================================ */}
-            {/* MOBILE ACTIONS ONLY */}
-            {/* ============================================ */}
+            {/* ================================================= */}
+            {/* MOBILE ACTIONS */}
+            {/* ================================================= */}
 
             <div
               className="mobile-actions"
-              style={styles.mobileActionRow}
+              style={
+                styles.mobileActionRow
+              }
             >
+              {/* MOBILE QUICK VIEW */}
+
               <button
                 type="button"
-                style={styles.mobileQuickView}
-                onClick={() => {}}
+                style={
+                  styles.mobileQuickView
+                }
+                onClick={(e) =>
+                  handleQuickView(
+                    e,
+                    product
+                  )
+                }
               >
                 Quick View
               </button>
 
+              {/* MOBILE ADD TO BAG */}
+
               <button
                 type="button"
-                style={styles.mobileAddToCart}
-                onClick={() => {}}
+                style={
+                  styles.mobileAddToCart
+                }
+                disabled={
+                  addingProduct ===
+                  product.id
+                }
+                onClick={(e) =>
+                  handleAddToCart(
+                    e,
+                    product
+                  )
+                }
               >
-                Add to Bag
+                {addingProduct ===
+                product.id
+                  ? "Adding..."
+                  : "Add to Bag"}
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ================= CSS ================= */}
+      {/* ===================================================== */}
+      {/* CSS */}
+      {/* ===================================================== */}
 
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
-
-          /* ============================================ */
-          /* GENERAL */
-          /* ============================================ */
 
           .new-arrivals-container,
           .new-arrivals-container * {
             box-sizing: border-box;
           }
 
-          /* ============================================ */
-          /* DESKTOP DEFAULT */
-          /* ============================================ */
-
-          /*
-            IMPORTANT:
-            Mobile buttons are COMPLETELY hidden
-            on desktop.
-          */
-
           .mobile-actions {
             display: none !important;
           }
-
-          /*
-            Desktop buttons hidden by default.
-          */
 
           .desktop-actions {
             display: flex !important;
@@ -263,10 +487,6 @@ const NewArrivals = () => {
               opacity 0.25s ease,
               visibility 0.25s ease;
           }
-
-          /*
-            Desktop buttons appear ONLY on hover.
-          */
 
           @media (min-width: 769px) and (hover: hover) {
 
@@ -291,10 +511,6 @@ const NewArrivals = () => {
             }
           }
 
-          /* ============================================ */
-          /* PRODUCT CARD */
-          /* ============================================ */
-
           .product-card {
             height: 100%;
 
@@ -306,8 +522,7 @@ const NewArrivals = () => {
 
           .product-image {
             transition:
-              transform 0.5s
-              cubic-bezier(0.165, 0.84, 0.44, 1);
+              transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
           }
 
           .view-all-link {
@@ -318,9 +533,9 @@ const NewArrivals = () => {
             color: #C22730 !important;
           }
 
-          /* ============================================ */
-          /* MOBILE / ANDROID */
-          /* ============================================ */
+          /* ================================================= */
+          /* MOBILE */
+          /* ================================================= */
 
           @media (max-width: 768px) {
 
@@ -335,19 +550,9 @@ const NewArrivals = () => {
               gap: 10px !important;
             }
 
-            /*
-              Hide desktop overlay completely
-              on Android/mobile.
-            */
-
             .desktop-actions {
               display: none !important;
             }
-
-            /*
-              Show mobile buttons ONLY
-              on Android/mobile.
-            */
 
             .mobile-actions {
               display: flex !important;
@@ -408,9 +613,9 @@ const NewArrivals = () => {
             }
           }
 
-          /* ============================================ */
-          /* SMALL ANDROID */
-          /* ============================================ */
+          /* ================================================= */
+          /* SMALL MOBILE */
+          /* ================================================= */
 
           @media (max-width: 400px) {
 
@@ -477,9 +682,11 @@ const styles = {
   },
 
   title: {
-    fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
+    fontSize:
+      "clamp(1.8rem, 3vw, 2.4rem)",
     margin: "6px 0 0",
-    fontFamily: '"Playfair Display", serif',
+    fontFamily:
+      '"Playfair Display", serif',
     color: "#4B2954",
     fontWeight: "700",
   },
@@ -627,7 +834,6 @@ const styles = {
     fontSize: "13px",
     margin: "0 0 8px",
     color: "#4B2954",
-  
     lineHeight: "1.3",
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -659,7 +865,8 @@ const styles = {
   mobileQuickView: {
     flex: 1,
     padding: "6px 2px",
-    border: "1px solid rgba(75, 41, 84, 0.15)",
+    border:
+      "1px solid rgba(75, 41, 84, 0.15)",
     borderRadius: "3px",
     backgroundColor: "#FAF5FC",
     color: "#4B2954",
