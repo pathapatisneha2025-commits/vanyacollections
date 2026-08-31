@@ -426,15 +426,7 @@ const styles = {
     marginTop: "8px",
   },
 
-  viewAll: {
-    color: "#4B2954",
-    textDecoration: "none",
-    fontSize: "12px",
-    fontWeight: "600",
-    letterSpacing: "1px",
-    textTransform: "uppercase",
-    whiteSpace: "nowrap",
-  },
+ 
 
   /* GRID */
 
