@@ -295,7 +295,7 @@ const Footer = () => {
           box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* Responsive */
+        /* Responsive Improvements for Mobile */
         @media (max-width: 1024px) { 
           .footer-grid { 
             grid-template-columns: repeat(2, 1fr); 
@@ -305,39 +305,70 @@ const Footer = () => {
             grid-column: span 2;
           }
         }
+
         @media (max-width: 600px) { 
+          .vanya-footer {
+            padding: 50px 16px 30px;
+          }
+          .newsletter-section {
+            margin-bottom: 45px;
+          }
+          .newsletter-title {
+            font-size: 1.8rem;
+          }
+          .newsletter-desc {
+            font-size: 13.5px;
+            margin-bottom: 20px;
+          }
+          .newsletter-form { 
+            flex-direction: row; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50px;
+            padding: 4px;
+          }
+          .newsletter-input {
+            padding: 10px 15px;
+            font-size: 13px;
+          }
+          .subscribe-btn {
+            padding: 10px 20px;
+            font-size: 12px;
+            white-space: nowrap;
+          }
+          .footer-divider {
+            margin-bottom: 40px;
+          }
           .footer-grid { 
-            grid-template-columns: 1fr; 
-            text-align: center; 
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for a neat professional desktop-like look on mobile */
+            gap: 30px 15px; 
+            text-align: left; 
           }
           .brand-col {
-            grid-column: span 1;
-            align-items: center;
+            grid-column: span 2; /* Brand spans full width at the top */
+            align-items: flex-start;
           }
           .brand-col .footer-logo {
-            transform-origin: center center;
+            transform-origin: left center;
+            height: 60px;
           }
           .contact-item { 
-            justify-content: center; 
+            justify-content: flex-start; 
             text-align: left;
           }
           .social-links { 
-            justify-content: center; 
+            justify-content: flex-start; 
+          }
+          .footer-col h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+          }
+          .footer-col ul li {
+            font-size: 13px;
+            margin-bottom: 10px;
           }
           .footer-col ul li:hover { 
             transform: none; 
-          }
-          .newsletter-form {
-            flex-direction: column;
-            background: transparent;
-            border: none;
-            gap: 12px;
-            box-shadow: none;
-          }
-          .newsletter-input {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 50px;
           }
         }
       `}</style>
