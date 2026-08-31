@@ -28,7 +28,9 @@ const NewArrivals = () => {
           <h2 style={styles.title}>New Arrivals</h2>
           <div style={styles.underline}></div>
         </div>
-        <Link to="/products" style={styles.viewAll} className="view-all-link">View All →</Link>
+<Link to="/new-arrivals" style={styles.viewAll} className="view-all-link">
+  View All →
+</Link>
       </div>
 
       {/* Product Grid */}

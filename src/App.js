@@ -24,6 +24,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import CategoryProducts from "./pages/CategoryProduct";
+import BestSellers from "./pages/BestSeller";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -72,7 +73,9 @@ function App() {
             <Route path="/ProfilePage" element={<ProfilePage />} />
             <Route path="/wishlist" element={<Wishlist />} />
 
+            <Route path="/new-arrivals" element={<NewArrivals/>} />
 
+            <Route path="/best-sellers" element={<BestSellers/>} />
 
 
 

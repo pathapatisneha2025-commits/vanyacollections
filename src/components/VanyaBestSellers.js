@@ -27,9 +27,11 @@ const VanyaBestSellers = () => {
           <span style={styles.tagline}>✦ FAN FAVOURITES ✦</span>
           <h2 style={styles.title}>Best Sellers</h2>
           <div style={styles.underline}></div>
-        </div>
-        <Link to="/products" style={styles.viewAll} className="view-all-link">View All →</Link>
-      </div>
+       </div>
+      <Link to="/best-sellers" style={styles.viewAll} className="view-all-link">
+        View All →
+      </Link>
+            </div>
 
       {/* Product Grid */}
       <div style={styles.grid} className="bestsellers-grid">
