@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -49,7 +48,6 @@ const BestSellers = () => {
       className="bestsellers-container"
     >
       {/* ================= BACK BUTTON ================= */}
-
       <button
         type="button"
         onClick={() => navigate(-1)}
@@ -62,7 +60,6 @@ const BestSellers = () => {
       </button>
 
       {/* ================= HEADER ================= */}
-
       <div
         style={styles.header}
         className="bestsellers-header"
@@ -87,7 +84,6 @@ const BestSellers = () => {
       </div>
 
       {/* ================= LOADING ================= */}
-
       {loading && (
         <div style={styles.message}>
           Loading best sellers...
@@ -95,7 +91,6 @@ const BestSellers = () => {
       )}
 
       {/* ================= EMPTY ================= */}
-
       {!loading && products.length === 0 && (
         <div style={styles.message}>
           No best sellers available at the moment.
@@ -103,30 +98,26 @@ const BestSellers = () => {
       )}
 
       {/* ================= PRODUCT GRID ================= */}
-
       {!loading && products.length > 0 && (
         <div
           style={styles.grid}
           className="bestsellers-grid"
         >
           {products.map((product) => (
-            <Link
+            <div
               key={product.id}
-              to={`/product/${product.id}`}
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                display: "block",
-                minWidth: 0,
-                width: "100%",
-              }}
+              style={styles.productCard}
+              className="product-card"
             >
-              <div
-                style={styles.productCard}
-                className="product-card"
+              {/* ================= IMAGE & BADGES & HOVER ACTIONS (Clickable Container) ================= */}
+              <Link
+                to={`/product/${product.id}`}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  display: "block",
+                }}
               >
-                {/* ================= IMAGE ================= */}
-
                 <div
                   style={styles.imageWrapper}
                   className="product-image-wrapper"
@@ -143,7 +134,6 @@ const BestSellers = () => {
                   />
 
                   {/* ================= BADGES ================= */}
-
                   <div
                     style={styles.badgeContainer}
                     className="badge-container"
@@ -159,11 +149,10 @@ const BestSellers = () => {
                     )}
                   </div>
 
-                  {/* ================= ACTION BUTTONS ================= */}
-
+                  {/* ================= DESKTOP HOVER ACTION BUTTONS ================= */}
                   <div
-                    className="actions"
-                    style={styles.actionOverlay}
+                    className="actions desktop-actions"
+                    style={styles.desktopActionOverlay}
                   >
                     <button
                       type="button"
@@ -171,6 +160,7 @@ const BestSellers = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        // Add quick view logic here
                       }}
                     >
                       Quick View
@@ -182,15 +172,25 @@ const BestSellers = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        // Add to bag logic here
                       }}
                     >
                       Add to Bag
                     </button>
                   </div>
                 </div>
+              </Link>
 
-                {/* ================= PRODUCT INFO ================= */}
-
+              {/* ================= PRODUCT INFO (Clickable) ================= */}
+              <Link
+                to={`/product/${product.id}`}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  display: "block",
+                  flexGrow: 1,
+                }}
+              >
                 <div
                   style={styles.info}
                   className="product-info"
@@ -236,14 +236,43 @@ const BestSellers = () => {
                       )}
                   </div>
                 </div>
+              </Link>
+
+              {/* ================= MOBILE ACTION BUTTONS (Persistent layout below details) ================= */}
+              <div
+                className="actions mobile-actions"
+                style={styles.mobileActionRow}
+              >
+                <button
+                  type="button"
+                  style={styles.quickView}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Add quick view logic here
+                  }}
+                >
+                  Quick View
+                </button>
+
+                <button
+                  type="button"
+                  style={styles.addToCart}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Add to bag logic here
+                  }}
+                >
+                  Add to Bag
+                </button>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
 
       {/* ================= RESPONSIVE CSS ================= */}
-
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
@@ -260,11 +289,8 @@ const BestSellers = () => {
           }
 
           /* ================= BACK BUTTON ================= */
-
           .back-button {
-            transition:
-              color 0.2s ease,
-              transform 0.2s ease;
+            transition: color 0.2s ease, transform 0.2s ease;
           }
 
           .back-button:hover {
@@ -287,59 +313,61 @@ const BestSellers = () => {
           }
 
           /* ================= PRODUCT CARD ================= */
-
           .product-card {
             height: 100%;
-            transition:
-              transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1),
-              box-shadow 0.35s ease,
-              border-color 0.35s ease;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1),
+                        box-shadow 0.35s ease,
+                        border-color 0.35s ease;
+            position: relative;
+            background: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(75, 41, 84, 0.08);
+            box-shadow: 0 4px 15px rgba(75, 41, 84, 0.04);
+          }
+
+          /* Default hide mobile actions on desktop */
+          .mobile-actions {
+            display: none !important;
           }
 
           @media (hover: hover) {
             .product-card:hover {
               transform: translateY(-5px);
               border-color: #D4AF37 !important;
-
-              box-shadow:
-                0 12px 30px rgba(75, 41, 84, 0.12),
-                0 0 15px rgba(212, 175, 55, 0.2) !important;
+              box-shadow: 0 12px 30px rgba(75, 41, 84, 0.12),
+                          0 0 15px rgba(212, 175, 55, 0.2) !important;
             }
 
             .product-card:hover .product-image {
               transform: scale(1.04);
             }
 
-            .product-card:hover .actions {
+            /* Desktop Hover Overlay Style */
+            .desktop-actions {
+              opacity: 0;
+              transition: opacity 0.25s ease;
+            }
+
+            .product-card:hover .desktop-actions {
               opacity: 1;
             }
           }
 
           .product-image {
-            transition:
-              transform 0.5s
-              cubic-bezier(0.165, 0.84, 0.44, 1);
-          }
-
-          /* ================= ACTIONS ================= */
-
-          .actions {
-            opacity: 0;
-            transition: opacity 0.25s ease;
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
           }
 
           /* ================= TABLET ================= */
-
           @media (min-width: 769px) and (max-width: 1100px) {
-
             .bestsellers-container {
               padding: 30px 18px 50px !important;
             }
 
             .bestsellers-grid {
-              grid-template-columns:
-                repeat(3, minmax(0, 1fr)) !important;
-
+              grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
               gap: 18px !important;
             }
 
@@ -349,9 +377,7 @@ const BestSellers = () => {
           }
 
           /* ================= MOBILE / ANDROID ================= */
-
           @media (max-width: 768px) {
-
             .bestsellers-container {
               padding: 20px 10px 35px !important;
             }
@@ -359,13 +385,9 @@ const BestSellers = () => {
             .back-button {
               min-height: 44px !important;
               min-width: 85px !important;
-
               padding: 8px 10px !important;
-
               margin-bottom: 18px !important;
-
               font-size: 14px !important;
-
               -webkit-tap-highlight-color: transparent;
               touch-action: manipulation;
             }
@@ -389,13 +411,9 @@ const BestSellers = () => {
             }
 
             .bestsellers-grid {
-              grid-template-columns:
-                repeat(2, minmax(0, 1fr)) !important;
-
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
               gap: 8px !important;
-
               padding: 0 !important;
-
               width: 100% !important;
             }
 
@@ -404,7 +422,7 @@ const BestSellers = () => {
             }
 
             .product-info {
-              padding: 10px 8px !important;
+              padding: 10px 8px 4px 8px !important;
             }
 
             .product-category {
@@ -425,33 +443,28 @@ const BestSellers = () => {
               font-size: 9px !important;
             }
 
-            /* Always show buttons on Android/mobile */
-
-            .actions {
-              opacity: 1 !important;
-
-              position: relative !important;
-
-              background: transparent !important;
-
-              backdrop-filter: none !important;
-
-              padding: 5px 0 0 0 !important;
-
-              gap: 3px !important;
+            /* Hide desktop hover overlay on mobile */
+            .desktop-actions {
+              display: none !important;
             }
 
-            .actions button {
+            /* Show mobile persistent action buttons below product info */
+            .mobile-actions {
+              display: flex !important;
+              opacity: 1 !important;
+              position: relative !important;
+              background: transparent !important;
+              backdrop-filter: none !important;
+              padding: 6px 8px 10px 8px !important;
+              gap: 4px !important;
+            }
+
+            .mobile-actions button {
               min-height: 32px !important;
-
               font-size: 7.5px !important;
-
               padding: 5px 2px !important;
-
               letter-spacing: 0 !important;
-
               -webkit-tap-highlight-color: transparent;
-
               touch-action: manipulation;
             }
 
@@ -462,9 +475,7 @@ const BestSellers = () => {
           }
 
           /* ================= SMALL ANDROID ================= */
-
           @media (max-width: 400px) {
-
             .bestsellers-container {
               padding-left: 7px !important;
               padding-right: 7px !important;
@@ -479,7 +490,7 @@ const BestSellers = () => {
             }
 
             .product-info {
-              padding: 8px 6px !important;
+              padding: 8px 6px 2px 6px !important;
             }
 
             .product-name {
@@ -510,385 +521,217 @@ const BestSellers = () => {
 };
 
 const styles = {
-  /* ================= CONTAINER ================= */
-
   container: {
     width: "100%",
     maxWidth: "1300px",
-
     padding: "30px 20px 50px",
-
     margin: "0 auto",
-
     fontFamily: '"Montserrat", sans-serif',
-
     backgroundColor: "#FAF5FC",
-
     minHeight: "100vh",
-
     boxSizing: "border-box",
-
     overflowX: "hidden",
   },
-
-  /* ================= BACK ================= */
-
   backButton: {
     display: "inline-flex",
-
     alignItems: "center",
     justifyContent: "center",
-
     gap: "7px",
-
     background: "transparent",
-
     border: "none",
-
     color: "#4B2954",
-
     fontSize: "13px",
-
     fontWeight: "600",
-
     cursor: "pointer",
-
     padding: "8px 4px",
-
     marginBottom: "25px",
-
     fontFamily: '"Montserrat", sans-serif',
-
     letterSpacing: "0.5px",
-
     WebkitTapHighlightColor: "transparent",
-
     touchAction: "manipulation",
   },
-
-  /* ================= HEADER ================= */
-
   header: {
     display: "flex",
-
     justifyContent: "space-between",
-
     alignItems: "flex-end",
-
     marginBottom: "35px",
-
-    borderBottom:
-      "1px solid rgba(212, 175, 55, 0.25)",
-
+    borderBottom: "1px solid rgba(212, 175, 55, 0.25)",
     paddingBottom: "15px",
-
     width: "100%",
   },
-
   headerContent: {
     minWidth: 0,
   },
-
   tagline: {
     color: "#D4AF37",
-
     fontSize: "10px",
-
     fontWeight: "600",
-
     letterSpacing: "4px",
   },
-
   title: {
     fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
-
     margin: "6px 0 0",
-
     fontFamily: '"Playfair Display", serif',
-
     color: "#000000",
-
     fontWeight: "700",
-
     lineHeight: "1.2",
   },
-
   underline: {
     width: "40px",
-
     height: "2px",
-
     backgroundColor: "#D4AF37",
-
     marginTop: "8px",
   },
-
-  /* ================= GRID ================= */
-
   grid: {
     display: "grid",
-
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(240px, 1fr))",
-
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "24px",
-
     width: "100%",
   },
-
-  /* ================= CARD ================= */
-
   productCard: {
     width: "100%",
-
     backgroundColor: "#FFFFFF",
-
     borderRadius: "8px",
-
     overflow: "hidden",
-
-    border:
-      "1px solid rgba(75, 41, 84, 0.08)",
-
-    boxShadow:
-      "0 4px 15px rgba(75, 41, 84, 0.04)",
+    border: "1px solid rgba(75, 41, 84, 0.08)",
+    boxShadow: "0 4px 15px rgba(75, 41, 84, 0.04)",
   },
-
-  /* ================= IMAGE ================= */
-
   imageWrapper: {
     position: "relative",
-
     width: "100%",
-
     height: "320px",
-
     overflow: "hidden",
-
     backgroundColor: "#F3EBF5",
   },
-
   image: {
     width: "100%",
-
     height: "100%",
-
     objectFit: "cover",
-
     display: "block",
   },
-
-  /* ================= BADGES ================= */
-
   badgeContainer: {
     position: "absolute",
-
     top: "10px",
-
     left: "10px",
-
     display: "flex",
-
     flexDirection: "column",
-
     gap: "4px",
-
     zIndex: 2,
   },
-
   badgeBestseller: {
     backgroundColor: "#4B2954",
-
     color: "#FBF5FC",
-
     fontSize: "8px",
-
     padding: "3px 7px",
-
     borderRadius: "3px",
-
     fontWeight: "600",
-
     letterSpacing: "1px",
   },
-
   badgeDiscount: {
     backgroundColor: "#C22730",
-
     color: "#FFFFFF",
-
     fontSize: "8px",
-
     padding: "3px 7px",
-
     borderRadius: "3px",
-
     fontWeight: "600",
-
     letterSpacing: "1px",
   },
-
-  /* ================= ACTIONS ================= */
-
-  actionOverlay: {
+  desktopActionOverlay: {
     position: "absolute",
-
     bottom: "0",
-
     left: "0",
-
     right: "0",
-
     padding: "12px",
-
     boxSizing: "border-box",
-
     display: "flex",
-
     gap: "8px",
-
     background:
       "linear-gradient(to top, rgba(75, 41, 84, 0.85) 0%, rgba(75, 41, 84, 0.3) 75%, transparent 100%)",
-
     backdropFilter: "blur(3px)",
-
     zIndex: 2,
   },
-
+  mobileActionRow: {
+    display: "flex",
+    gap: "8px",
+    padding: "0 14px 14px 14px",
+    boxSizing: "border-box",
+    zIndex: 2,
+  },
   quickView: {
     flex: 1,
-
     padding: "8px",
-
     border: "none",
-
     borderRadius: "3px",
-
-    backgroundColor:
-      "rgba(255, 255, 255, 0.95)",
-
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
     color: "#4B2954",
-
     cursor: "pointer",
-
     fontSize: "10px",
-
     fontWeight: "600",
-
     letterSpacing: "0.5px",
-
     textTransform: "uppercase",
-
     touchAction: "manipulation",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
   },
-
   addToCart: {
     flex: 1,
-
     padding: "8px",
-
     border: "none",
-
     borderRadius: "3px",
-
     backgroundColor: "#D4AF37",
-
     color: "#222222",
-
     cursor: "pointer",
-
     fontSize: "10px",
-
     fontWeight: "700",
-
     letterSpacing: "0.5px",
-
     textTransform: "uppercase",
-
     touchAction: "manipulation",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
   },
-
-  /* ================= PRODUCT INFO ================= */
-
   info: {
-    padding: "16px 14px",
-
+    padding: "16px 14px 8px 14px",
     minWidth: 0,
   },
-
   category: {
     color: "#8E7394",
-
     fontSize: "9px",
-
     margin: "0 0 4px",
-
     letterSpacing: "1.5px",
-
     textTransform: "uppercase",
-
     fontWeight: "500",
   },
-
   productName: {
     fontSize: "14px",
-
     margin: "0 0 8px",
-
     color: "#4B2954",
-
     fontFamily: '"Playfair Display", serif',
-
     fontWeight: "600",
-
     lineHeight: "1.3",
-
     whiteSpace: "nowrap",
-
     overflow: "hidden",
-
     textOverflow: "ellipsis",
   },
-
   priceRow: {
     display: "flex",
-
     alignItems: "center",
-
     gap: "8px",
-
     flexWrap: "wrap",
   },
-
   currentPrice: {
     fontSize: "14px",
-
     fontWeight: "700",
-
     color: "#C22730",
   },
-
   oldPrice: {
     fontSize: "11px",
-
     color: "#9E8C9E",
-
     textDecoration: "line-through",
   },
-
-  /* ================= MESSAGE ================= */
-
   message: {
     width: "100%",
-
     textAlign: "center",
-
     padding: "60px 20px",
-
     color: "#4B2954",
-
     fontSize: "14px",
-
     fontWeight: "500",
   },
 };

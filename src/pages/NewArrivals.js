@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
@@ -10,9 +10,16 @@ const NewArrivals = () => {
 
   const fetchNewArrivals = async () => {
     try {
-      const res = await fetch("https://vanyabackenddatabase-vahr.onrender.com/products/all");
+      const res = await fetch(
+        "https://vanyabackenddatabase-vahr.onrender.com/products/all"
+      );
+
       const data = await res.json();
-      const newArrivals = data.filter((p) => p.type === "New Arrival");
+
+      const newArrivals = data.filter(
+        (p) => p.type === "New Arrival"
+      );
+
       setProducts(newArrivals);
     } catch (err) {
       console.error("Error fetching new arrivals:", err);
@@ -20,84 +27,164 @@ const NewArrivals = () => {
   };
 
   return (
-    <div style={styles.container} className="new-arrivals-container">
-      {/* Header */}
-      <div style={styles.header} className="new-arrivals-header">
+    <div
+      style={styles.container}
+      className="new-arrivals-container"
+    >
+      {/* HEADER */}
+      <div
+        style={styles.header}
+        className="new-arrivals-header"
+      >
         <div>
-          <span style={styles.tagline}>✦ CURATED EXCLUSIVES ✦</span>
-          <h2 style={styles.title}>New Arrivals</h2>
+          <span style={styles.tagline}>
+            ✦ CURATED EXCLUSIVES ✦
+          </span>
+
+          <h2 style={styles.title}>
+            New Arrivals
+          </h2>
+
           <div style={styles.underline}></div>
         </div>
-        <Link to="/products" style={styles.viewAll} className="view-all-link">View All →</Link>
+
+
       </div>
 
-      {/* Product Grid */}
-      <div style={styles.grid} className="new-arrivals-grid">
+      {/* PRODUCT GRID */}
+      <div
+        style={styles.grid}
+        className="new-arrivals-grid"
+      >
         {products.map((product) => (
-          <div key={product.id} className="product-card-wrapper" style={styles.cardWrapper}>
-            <div style={styles.productCard} className="product-card">
-              {/* Image Container (Clickable to detail page) */}
+          <div
+            key={product.id}
+            className="product-card"
+            style={styles.productCard}
+          >
+            {/* IMAGE AREA */}
+            <div
+              className="product-image-wrapper"
+              style={styles.imageWrapper}
+            >
+              {/* CLICK IMAGE */}
               <Link
                 to={`/product/${product.id}`}
-                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                style={styles.imageLink}
               >
-                <div style={styles.imageWrapper} className="product-image-wrapper">
-                  <img
-                    src={product.img_url || product.thumbnails?.[0]}
-                    alt={product.name}
-                    style={styles.image}
-                    className="product-image"
-                  />
-
-                  {/* Compact Badges */}
-                  <div style={styles.badgeContainer}>
-                    <span style={styles.badgeNew}>NEW</span>
-                    {product.discount > 0 && (
-                      <span style={styles.badgeDiscount}>{product.discount}% OFF</span>
-                    )}
-                  </div>
-                </div>
+                <img
+                  src={
+                    product.img_url ||
+                    product.thumbnails?.[0]
+                  }
+                  alt={product.name}
+                  style={styles.image}
+                  className="product-image"
+                />
               </Link>
 
-              {/* Product Info */}
-              <Link
-                to={`/product/${product.id}`}
-                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+              {/* BADGES */}
+              <div style={styles.badgeContainer}>
+                <span style={styles.badgeNew}>
+                  NEW
+                </span>
+
+                {product.discount > 0 && (
+                  <span style={styles.badgeDiscount}>
+                    {product.discount}% OFF
+                  </span>
+                )}
+              </div>
+
+              {/* DESKTOP ACTIONS */}
+              <div
+                className="desktop-actions"
+                style={styles.desktopActions}
               >
-                <div style={styles.info} className="product-info">
-                  <p style={styles.category}>{product.category || "Handloom Saree"}</p>
-                  <h3 style={styles.productName}>{product.name}</h3>
+                <button
+                  style={styles.quickView}
+                  onClick={(e) => {
+                    e.stopPropagation();
 
-                  <div style={styles.priceRow}>
-                    <span style={styles.currentPrice}>₹{Number(product.price).toLocaleString()}</span>
-                    {product.old_price && Number(product.old_price) > Number(product.price) && (
-                      <span style={styles.oldPrice}>₹{Number(product.old_price).toLocaleString()}</span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-
-              {/* Action Buttons (Unified responsive container) */}
-              <div className="product-actions" style={styles.actionRow}>
-                <button 
-                  style={styles.quickView} 
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    // Add your Quick View handler logic here
+                    // Quick View logic here
+                    console.log("Quick View", product);
                   }}
                 >
                   Quick View
                 </button>
-                <button 
-                  style={styles.addToCart} 
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    // Add your Add to Bag handler logic here
+
+                <button
+                  style={styles.addToCart}
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    // Add To Cart logic here
+                    console.log("Add To Bag", product);
                   }}
                 >
                   Add to Bag
                 </button>
               </div>
+            </div>
+
+            {/* PRODUCT INFORMATION */}
+            <Link
+              to={`/product/${product.id}`}
+              style={styles.productInfoLink}
+            >
+              <div
+                style={styles.info}
+                className="product-info"
+              >
+                <p style={styles.category}>
+                  {product.category || "Handloom Saree"}
+                </p>
+
+                <h3 style={styles.productName}>
+                  {product.name}
+                </h3>
+
+                <div style={styles.priceRow}>
+                  <span style={styles.currentPrice}>
+                    ₹{Number(product.price || 0).toLocaleString()}
+                  </span>
+
+                  {product.old_price &&
+                    Number(product.old_price) >
+                      Number(product.price) && (
+                      <span style={styles.oldPrice}>
+                        ₹
+                        {Number(
+                          product.old_price
+                        ).toLocaleString()}
+                      </span>
+                    )}
+                </div>
+              </div>
+            </Link>
+
+            {/* MOBILE ACTIONS */}
+            <div
+              className="mobile-actions"
+              style={styles.mobileActions}
+            >
+              <button
+                style={styles.mobileQuickView}
+                onClick={() => {
+                  console.log("Quick View", product);
+                }}
+              >
+                Quick View
+              </button>
+
+              <button
+                style={styles.mobileAddToCart}
+                onClick={() => {
+                  console.log("Add To Bag", product);
+                }}
+              >
+                Add to Bag
+              </button>
             </div>
           </div>
         ))}
@@ -105,93 +192,189 @@ const NewArrivals = () => {
 
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
-          .product-card {
-            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: #FFFFFF;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(75, 41, 84, 0.08);
-            box-shadow: 0 4px 15px rgba(75, 41, 84, 0.04);
+          * {
             box-sizing: border-box;
           }
 
-          .product-card:hover {
-            transform: translateY(-5px);
-            border-color: #D4AF37 !important;
-            box-shadow: 0 12px 30px rgba(75, 41, 84, 0.12), 0 0 15px rgba(212, 175, 55, 0.2) !important;
+          /* =========================
+             PRODUCT CARD
+          ========================= */
+
+          .product-card {
+            transition: all 0.35s cubic-bezier(
+              0.165,
+              0.84,
+              0.44,
+              1
+            );
           }
 
-          .product-card:hover .product-image {
-            transform: scale(1.04);
+          @media (min-width: 769px) {
+
+            .product-card:hover {
+              transform: translateY(-5px);
+              border-color: #D4AF37 !important;
+              box-shadow:
+                0 12px 30px rgba(75, 41, 84, 0.12),
+                0 0 15px rgba(212, 175, 55, 0.2) !important;
+            }
+
+            .product-card:hover .product-image {
+              transform: scale(1.05);
+            }
+
+            /* HIDE DESKTOP BUTTONS */
+
+            .desktop-actions {
+              opacity: 0;
+              visibility: hidden;
+              transform: translateY(15px);
+
+              transition:
+                opacity 0.25s ease,
+                transform 0.25s ease,
+                visibility 0.25s ease;
+            }
+
+            /* SHOW ONLY ON IMAGE HOVER */
+
+            .product-image-wrapper:hover .desktop-actions {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(0);
+            }
+
+            /* MOBILE BUTTONS HIDDEN */
+
+            .mobile-actions {
+              display: none !important;
+            }
           }
+
+          /* =========================
+             IMAGE
+          ========================= */
 
           .product-image {
-            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: transform 0.5s ease;
           }
 
+          /* =========================
+             VIEW ALL
+          ========================= */
+
           .view-all-link {
-            transition: color 0.2s ease;
+            transition: color 0.25s ease;
           }
 
           .view-all-link:hover {
             color: #C22730 !important;
           }
 
-          /* Desktop Actions Style (Hover Overlay) */
-          @media (min-width: 769px) {
+          /* =========================
+             TABLET
+          ========================= */
+
+          @media (max-width: 1024px) and (min-width: 769px) {
+
+            .new-arrivals-grid {
+              grid-template-columns:
+                repeat(3, 1fr) !important;
+
+              gap: 16px !important;
+            }
+
             .product-image-wrapper {
-              position: relative;
-            }
-            .product-actions {
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              opacity: 0;
-              transition: opacity 0.25s ease;
-              background: linear-gradient(to top, rgba(75, 41, 84, 0.85) 0%, rgba(75, 41, 84, 0.3) 75%, transparent 100%);
-              backdrop-filter: blur(3px);
-              padding: 12px;
-              display: flex;
-              gap: 8px;
-              z-index: 2;
-            }
-            /* Target wrapper image area context for hover trigger */
-            .product-card-wrapper:hover .product-actions {
-              opacity: 1;
+              height: 270px !important;
             }
           }
 
-          /* Mobile Actions Style (Always visible stacked layout) */
+          /* =========================
+             MOBILE / ANDROID
+          ========================= */
+
           @media (max-width: 768px) {
+
             .new-arrivals-container {
-              padding: 25px 10px !important;
+              padding: 20px 10px !important;
+              width: 100%;
             }
+
+            .new-arrivals-header {
+              margin-bottom: 20px !important;
+              padding-bottom: 12px !important;
+              align-items: flex-end !important;
+            }
+
             .new-arrivals-grid {
-              grid-template-columns: repeat(2, 1fr) !important;
+              grid-template-columns:
+                repeat(2, minmax(0, 1fr)) !important;
+
+              gap: 10px !important;
+            }
+
+            /* HIDE DESKTOP HOVER BUTTONS */
+
+            .desktop-actions {
+              display: none !important;
+            }
+
+            /* SHOW MOBILE BUTTONS */
+
+            .mobile-actions {
+              display: flex !important;
+            }
+
+            .product-image-wrapper {
+              height: 190px !important;
+            }
+
+            .product-info {
+              padding: 10px 8px !important;
+            }
+
+            .product-card {
+              border-radius: 8px !important;
+            }
+          }
+
+          /* =========================
+             SMALL ANDROID
+          ========================= */
+
+          @media (max-width: 480px) {
+
+            .new-arrivals-container {
+              padding: 16px 8px !important;
+            }
+
+            .new-arrivals-grid {
               gap: 8px !important;
             }
+
             .product-image-wrapper {
-              height: 150px !important;
+              height: 165px !important;
             }
-            .product-actions {
-              display: flex !important;
-              position: relative !important;
-              opacity: 1 !important;
-              background: transparent !important;
-              padding: 0 8px 10px 8px !important;
-              gap: 4px;
-              margin-top: auto;
+
+            .new-arrivals-header {
+              margin-bottom: 16px !important;
             }
-            .product-actions button {
-              font-size: 8px !important;
-              padding: 6px 2px !important;
-              letter-spacing: 0.2px !important;
+          }
+
+          /* =========================
+             VERY SMALL SCREENS
+          ========================= */
+
+          @media (max-width: 360px) {
+
+            .product-image-wrapper {
+              height: 145px !important;
+            }
+
+            .new-arrivals-grid {
+              gap: 6px !important;
             }
           }
         `}
@@ -202,175 +385,322 @@ const NewArrivals = () => {
 
 const styles = {
   container: {
-    padding: '50px 20px',
-    maxWidth: '1300px',
-    margin: '0 auto',
+    padding: "50px 20px",
+    maxWidth: "1300px",
+    margin: "0 auto",
     fontFamily: '"Montserrat", sans-serif',
-    backgroundColor: '#FAF5FC',
-    minHeight: '100vh',
-    boxSizing: 'border-box',
+    backgroundColor: "#FAF5FC",
+    minHeight: "100vh",
+    width: "100%",
   },
+
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: '35px',
-    borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
-    paddingBottom: '15px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    marginBottom: "35px",
+    borderBottom:
+      "1px solid rgba(212, 175, 55, 0.25)",
+    paddingBottom: "15px",
   },
+
   tagline: {
-    color: '#D4AF37',
-    fontSize: '10px',
-    fontWeight: '600',
-    letterSpacing: '4px',
+    color: "#D4AF37",
+    fontSize: "10px",
+    fontWeight: "600",
+    letterSpacing: "4px",
   },
+
   title: {
-    fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
-    margin: '6px 0 0',
+    fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
+    margin: "6px 0 0",
     fontFamily: '"Playfair Display", serif',
-    color: '#4B2954',
-    fontWeight: '700',
+    color: "#4B2954",
+    fontWeight: "700",
   },
+
   underline: {
-    width: '40px',
-    height: '2px',
-    backgroundColor: '#D4AF37',
-    marginTop: '8px',
+    width: "40px",
+    height: "2px",
+    backgroundColor: "#D4AF37",
+    marginTop: "8px",
   },
+
   viewAll: {
-    color: '#4B2954',
-    textDecoration: 'none',
-    fontSize: '12px',
-    fontWeight: '600',
-    letterSpacing: '1px',
-    textTransform: 'uppercase',
+    color: "#4B2954",
+    textDecoration: "none",
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "1px",
+    textTransform: "uppercase",
+    whiteSpace: "nowrap",
   },
+
+  /* GRID */
+
   grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: '24px',
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "24px",
+    width: "100%",
   },
-  cardWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
+
+  /* CARD */
+
   productCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    border: '1px solid rgba(75, 41, 84, 0.08)',
-    boxShadow: '0 4px 15px rgba(75, 41, 84, 0.04)',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    position: 'relative',
+    backgroundColor: "#FFFFFF",
+    borderRadius: "8px",
+    overflow: "hidden",
+    border:
+      "1px solid rgba(75, 41, 84, 0.08)",
+    boxShadow:
+      "0 4px 15px rgba(75, 41, 84, 0.04)",
+    position: "relative",
+    minWidth: 0,
   },
+
+  /* IMAGE */
+
   imageWrapper: {
-    position: 'relative',
-    height: '320px',
-    overflow: 'hidden',
-    backgroundColor: '#F3EBF5',
+    position: "relative",
+    height: "320px",
+    overflow: "hidden",
+    backgroundColor: "#F3EBF5",
   },
+
+  imageLink: {
+    display: "block",
+    width: "100%",
+    height: "100%",
+  },
+
   image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
   },
+
+  /* BADGES */
+
   badgeContainer: {
-    position: 'absolute',
-    top: '10px',
-    left: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    zIndex: 2,
+    position: "absolute",
+    top: "10px",
+    left: "10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    zIndex: 3,
+    pointerEvents: "none",
   },
+
   badgeNew: {
-    backgroundColor: '#4B2954',
-    color: '#FBF5FC',
-    fontSize: '8px',
-    padding: '3px 7px',
-    borderRadius: '3px',
-    fontWeight: '600',
-    letterSpacing: '1px',
+    backgroundColor: "#4B2954",
+    color: "#FFFFFF",
+    fontSize: "8px",
+    padding: "4px 7px",
+    borderRadius: "3px",
+    fontWeight: "600",
+    letterSpacing: "1px",
   },
+
   badgeDiscount: {
-    backgroundColor: '#C22730',
-    color: '#FFFFFF',
-    fontSize: '8px',
-    padding: '3px 7px',
-    borderRadius: '3px',
-    fontWeight: '600',
-    letterSpacing: '1px',
+    backgroundColor: "#C22730",
+    color: "#FFFFFF",
+    fontSize: "8px",
+    padding: "4px 7px",
+    borderRadius: "3px",
+    fontWeight: "600",
+    letterSpacing: "1px",
   },
-  actionRow: {
-    display: 'flex',
-    gap: '8px',
+
+  /* DESKTOP HOVER ACTIONS */
+
+  desktopActions: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+
+    padding: "12px",
+
+    display: "flex",
+    gap: "8px",
+
+    background:
+      "linear-gradient(to top, rgba(75, 41, 84, 0.9) 0%, rgba(75, 41, 84, 0.45) 70%, transparent 100%)",
+
+    backdropFilter: "blur(3px)",
+
+    zIndex: 5,
   },
+
   quickView: {
     flex: 1,
-    padding: '8px',
-    border: 'none',
-    borderRadius: '3px',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    color: '#4B2954',
-    cursor: 'pointer',
-    fontSize: '10px',
-    fontWeight: '600',
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase',
+    padding: "9px 6px",
+    border: "none",
+    borderRadius: "4px",
+
+    backgroundColor:
+      "rgba(255,255,255,0.96)",
+
+    color: "#4B2954",
+
+    cursor: "pointer",
+
+    fontSize: "10px",
+    fontWeight: "600",
+
+    letterSpacing: "0.5px",
+
+    textTransform: "uppercase",
   },
+
   addToCart: {
     flex: 1,
-    padding: '8px',
-    border: 'none',
-    borderRadius: '3px',
-    backgroundColor: '#D4AF37',
-    color: '#222222',
-    cursor: 'pointer',
-    fontSize: '10px',
-    fontWeight: '700',
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase',
+
+    padding: "9px 6px",
+
+    border: "none",
+    borderRadius: "4px",
+
+    backgroundColor: "#D4AF37",
+
+    color: "#222",
+
+    cursor: "pointer",
+
+    fontSize: "10px",
+    fontWeight: "700",
+
+    letterSpacing: "0.5px",
+
+    textTransform: "uppercase",
   },
+
+  /* PRODUCT INFO */
+
+  productInfoLink: {
+    textDecoration: "none",
+    color: "inherit",
+    display: "block",
+  },
+
   info: {
-    padding: '14px 14px 10px 14px',
-    flexGrow: 1,
+    padding: "16px 14px",
   },
+
   category: {
-    color: '#8E7394',
-    fontSize: '9px',
-    margin: '0 0 4px',
-    letterSpacing: '1.5px',
-    textTransform: 'uppercase',
-    fontWeight: '500',
+    color: "#8E7394",
+    fontSize: "9px",
+    margin: "0 0 5px",
+    letterSpacing: "1.2px",
+    textTransform: "uppercase",
+    fontWeight: "500",
+
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
+
   productName: {
-    fontSize: '13px',
-    margin: '0 0 8px',
-    color: '#4B2954',
-    fontFamily: '"Playfair Display", serif',
-    fontWeight: '600',
-    lineHeight: '1.3',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    fontSize: "14px",
+
+    margin: "0 0 9px",
+
+    color: "#4B2954",
+
+    fontFamily:
+      '"Playfair Display", serif',
+
+    fontWeight: "600",
+
+    lineHeight: "1.3",
+
+    whiteSpace: "nowrap",
+
+    overflow: "hidden",
+
+    textOverflow: "ellipsis",
   },
+
   priceRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
+    display: "flex",
+    alignItems: "center",
+    gap: "7px",
+    flexWrap: "wrap",
   },
+
   currentPrice: {
-    fontSize: '13px',
-    fontWeight: '700',
-    color: '#C22730',
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#C22730",
   },
+
   oldPrice: {
-    fontSize: '10.5px',
-    color: '#9E8C9E',
-    textDecoration: 'line-through',
-  }
+    fontSize: "11px",
+    color: "#9E8C9E",
+    textDecoration: "line-through",
+  },
+
+  /* MOBILE ACTIONS */
+
+  mobileActions: {
+    display: "flex",
+    gap: "5px",
+
+    padding: "0 8px 10px",
+  },
+
+  mobileQuickView: {
+    flex: 1,
+
+    padding: "7px 3px",
+
+    border:
+      "1px solid rgba(75, 41, 84, 0.2)",
+
+    borderRadius: "4px",
+
+    backgroundColor: "#FAF5FC",
+
+    color: "#4B2954",
+
+    cursor: "pointer",
+
+    fontSize: "8px",
+
+    fontWeight: "600",
+
+    textTransform: "uppercase",
+
+    whiteSpace: "nowrap",
+  },
+
+  mobileAddToCart: {
+    flex: 1,
+
+    padding: "7px 3px",
+
+    border: "none",
+
+    borderRadius: "4px",
+
+    backgroundColor: "#D4AF37",
+
+    color: "#222",
+
+    cursor: "pointer",
+
+    fontSize: "8px",
+
+    fontWeight: "700",
+
+    textTransform: "uppercase",
+
+    whiteSpace: "nowrap",
+  },
 };
 
 export default NewArrivals;
