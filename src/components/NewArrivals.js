@@ -24,11 +24,11 @@ const NewArrivals = () => {
       {/* Header */}
       <div style={styles.header}>
         <div>
-          <span style={styles.tagline}>✦ JUST IN ✦</span>
+          <span style={styles.tagline}>✦ CURATED EXCLUSIVES ✦</span>
           <h2 style={styles.title}>New Arrivals</h2>
           <div style={styles.underline}></div>
         </div>
-        <a href="#" style={styles.viewAll} className="view-all-link">View All →</a>
+        <Link to="/products" style={styles.viewAll} className="view-all-link">View All →</Link>
       </div>
 
       {/* Product Grid */}
@@ -49,22 +49,24 @@ const NewArrivals = () => {
                   className="product-image"
                 />
 
-                {/* Badges */}
+                {/* Compact Badges */}
                 <div style={styles.badgeContainer}>
-                  <span style={{ ...styles.badge, backgroundColor: '#522b5b' }}>NEW</span>
+                  <span style={styles.badgeNew}>NEW</span>
                   {product.discount > 0 && (
-                    <span style={{ ...styles.badge, backgroundColor: '#c0392b' }}>{product.discount}% OFF</span>
+                    <span style={styles.badgeDiscount}>{product.discount}% OFF</span>
                   )}
                 </div>
 
-                {/* Action Buttons */}
+              
+
+                {/* Subtle Action Overlay */}
                 <div className="actions" style={styles.actionOverlay}>
-                  <button style={styles.quickView} onClick={(e) => { e.preventDefault(); }}>👁 Quick View</button>
-                  <button style={styles.addToCart} onClick={(e) => { e.preventDefault(); }}>🛒 Add to Cart</button>
+                  <button style={styles.quickView} onClick={(e) => { e.preventDefault(); }}>Quick View</button>
+                  <button style={styles.addToCart} onClick={(e) => { e.preventDefault(); }}>Add to Bag</button>
                 </div>
               </div>
 
-              {/* Product Info */}
+              {/* Product Info - Compact & Clean */}
               <div style={styles.info}>
                 <p style={styles.category}>{product.category || "Handloom Saree"}</p>
                 <h3 style={styles.productName}>{product.name}</h3>
@@ -83,46 +85,45 @@ const NewArrivals = () => {
 
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
 
           .product-card {
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
           }
 
-          /* Luxurious Purple Highlighter Hover Effect */
+          /* Elegant hover state with subtle purple shadow & gold outline */
           .product-card:hover {
-            transform: translateY(-8px);
-            background-color: #f7eff9 !important;
-            border-color: #8c4a9e !important;
-            box-shadow: 0 18px 40px rgba(82, 43, 91, 0.22), 0 0 25px rgba(140, 74, 158, 0.35) !important;
+            transform: translateY(-5px);
+            border-color: #D4AF37 !important;
+            box-shadow: 0 12px 30px rgba(75, 41, 84, 0.12), 0 0 15px rgba(212, 175, 55, 0.2) !important;
           }
 
           .product-card:hover .product-image {
-            transform: scale(1.06);
+            transform: scale(1.04);
           }
 
           .product-image {
-            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
           }
 
           .view-all-link {
-            transition: color 0.2s ease, text-shadow 0.2s ease;
+            transition: color 0.2s ease;
           }
 
           .view-all-link:hover {
-            color: #8c4a9e !important;
-            text-shadow: 0 0 10px rgba(140, 74, 158, 0.3);
+            color: #C22730 !important;
           }
 
-          .actions { opacity: 0; transition: opacity 0.3s ease; }
+          .actions { opacity: 0; transition: opacity 0.25s ease; }
           .product-card:hover .actions { opacity: 1; }
 
           @media (max-width: 768px) {
             .new-arrivals-grid {
-              grid-template-columns: 1fr !important;
-              padding: 0 10px !important;
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 12px !important;
+              padding: 0 5px !important;
             }
-            .actions { opacity: 1 !important; position: relative !important; background: none !important; padding: 12px 0 0 0 !important; }
+            .actions { opacity: 1 !important; position: relative !important; background: none !important; padding: 8px 0 0 0 !important; }
           }
         `}
       </style>
@@ -132,64 +133,66 @@ const NewArrivals = () => {
 
 const styles = {
   container: {
-    padding: '60px 20px',
+    padding: '50px 20px',
     maxWidth: '1300px',
     margin: '0 auto',
     fontFamily: '"Montserrat", sans-serif',
-    backgroundColor: '#fbf5fc',
+    backgroundColor: '#FAF5FC',
     minHeight: '100vh',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginBottom: '40px',
-    borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
-    paddingBottom: '20px',
+    marginBottom: '35px',
+    borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+    paddingBottom: '15px',
   },
   tagline: {
-    color: '#d4af37',
-    fontSize: '12px',
+    color: '#D4AF37',
+    fontSize: '10px',
     fontWeight: '600',
     letterSpacing: '4px',
   },
   title: {
-    fontSize: 'clamp(2rem, 3.5vw, 2.8rem)',
-    margin: '8px 0 0',
+    fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+    margin: '6px 0 0',
     fontFamily: '"Playfair Display", serif',
-    color: '#522b5b',
+    color: '#4B2954',
     fontWeight: '700',
   },
   underline: {
-    width: '60px',
+    width: '40px',
     height: '2px',
-    backgroundColor: '#d4af37',
-    marginTop: '10px',
+    backgroundColor: '#D4AF37',
+    marginTop: '8px',
   },
   viewAll: {
-    color: '#522b5b',
+    color: '#4B2954',
     textDecoration: 'none',
-    fontSize: '14px',
+    fontSize: '12px',
     fontWeight: '600',
     letterSpacing: '1px',
+    textTransform: 'uppercase',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '30px',
+    // Smaller columns setup for a compact, neat aesthetic (min 240px instead of 280px)
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '24px',
   },
   productCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: '16px',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '8px',
     overflow: 'hidden',
-    border: '1px solid rgba(212, 175, 55, 0.25)',
-    boxShadow: '0 8px 25px rgba(82, 43, 91, 0.08)',
+    border: '1px solid rgba(75, 41, 84, 0.08)',
+    boxShadow: '0 4px 15px rgba(75, 41, 84, 0.04)',
   },
   imageWrapper: {
     position: 'relative',
-    height: '400px',
+    height: '320px', // Reduced height for a more compact card structure
     overflow: 'hidden',
-    backgroundColor: '#f2e8f5',
+    backgroundColor: '#F3EBF5',
   },
   image: {
     width: '100%',
@@ -198,91 +201,122 @@ const styles = {
   },
   badgeContainer: {
     position: 'absolute',
-    top: '15px',
-    left: '15px',
+    top: '10px',
+    left: '10px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '4px',
     zIndex: 2,
   },
-  badge: {
-    color: '#fff',
-    fontSize: '10px',
-    padding: '5px 10px',
-    borderRadius: '6px',
+  badgeNew: {
+    backgroundColor: '#4B2954',
+    color: '#FBF5FC',
+    fontSize: '8px',
+    padding: '3px 7px',
+    borderRadius: '3px',
     fontWeight: '600',
-    textAlign: 'center',
     letterSpacing: '1px',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+  },
+  badgeDiscount: {
+    backgroundColor: '#C22730',
+    color: '#FFFFFF',
+    fontSize: '8px',
+    padding: '3px 7px',
+    borderRadius: '3px',
+    fontWeight: '600',
+    letterSpacing: '1px',
+  },
+  wishlistBtn: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    width: '30px',
+    height: '30px',
+    borderRadius: '50%',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    border: 'none',
+    color: '#4B2954',
+    fontSize: '15px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    zIndex: 2,
   },
   actionOverlay: {
     position: 'absolute',
     bottom: '0',
     left: '0',
     right: '0',
-    padding: '16px',
+    padding: '12px',
     boxSizing: 'border-box',
     display: 'flex',
-    gap: '10px',
-    background: 'linear-gradient(to top, rgba(45, 18, 51, 0.85) 0%, rgba(45, 18, 51, 0.3) 70%, transparent 100%)',
-    backdropFilter: 'blur(4px)',
+    gap: '8px',
+    background: 'linear-gradient(to top, rgba(75, 41, 84, 0.85) 0%, rgba(75, 41, 84, 0.3) 75%, transparent 100%)',
+    backdropFilter: 'blur(3px)',
     zIndex: 2,
   },
   quickView: {
     flex: 1,
-    padding: '10px',
+    padding: '8px',
     border: 'none',
-    borderRadius: '20px',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    color: '#522b5b',
+    borderRadius: '3px',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    color: '#4B2954',
     cursor: 'pointer',
-    fontSize: '12px',
+    fontSize: '10px',
     fontWeight: '600',
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
   },
   addToCart: {
     flex: 1,
-    padding: '10px',
+    padding: '8px',
     border: 'none',
-    borderRadius: '20px',
-    backgroundColor: '#d4af37',
-    color: '#ffffff',
+    borderRadius: '3px',
+    backgroundColor: '#D4AF37',
+    color: '#222222',
     cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: '600',
-    boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+    fontSize: '10px',
+    fontWeight: '700',
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
   },
   info: {
-    padding: '22px',
+    padding: '16px 14px', // Reduced padding for compact layout
   },
   category: {
-    color: '#8c6894',
-    fontSize: '11px',
-    margin: '0 0 6px',
+    color: '#8E7394',
+    fontSize: '9px',
+    margin: '0 0 4px',
     letterSpacing: '1.5px',
     textTransform: 'uppercase',
     fontWeight: '500',
   },
   productName: {
-    fontSize: '18px',
-    margin: '0 0 12px',
-    color: '#522b5b',
+    fontSize: '14px', // Refined cleaner smaller heading size
+    margin: '0 0 8px',
+    color: '#4B2954',
     fontFamily: '"Playfair Display", serif',
     fontWeight: '600',
-    lineHeight: '1.4',
+    lineHeight: '1.3',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis', // Truncates long names to keep card uniform
   },
   priceRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '8px',
   },
   currentPrice: {
-    fontSize: '18px',
+    fontSize: '14px',
     fontWeight: '700',
-    color: '#bfa136',
+    color: '#C22730',
   },
   oldPrice: {
-    fontSize: '14px',
-    color: '#9e8c9e',
+    fontSize: '11px',
+    color: '#9E8C9E',
     textDecoration: 'line-through',
   }
 };

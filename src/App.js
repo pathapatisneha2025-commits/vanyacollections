@@ -23,6 +23,7 @@ import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
+import CategoryProducts from "./pages/CategoryProduct";
 
 // Example pages (uncomment or replace with your own)
 // import LandingPage from "./pages/LandingPage";
@@ -58,6 +59,11 @@ function App() {
        <Route path="/collection" element={<CollectionPage />} />
        <Route path="/shop" element={<ShopPage />} />
       <Route path="/product/:id" element={<ProductdetailedPage />} />
+        <Route
+          path="/category/:category"
+          element={<CategoryProducts />}
+        />
+
      <Route path="/cart" element={<CartPage />} />
      <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrdersPage />} />
